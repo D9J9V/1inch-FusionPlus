@@ -22,3 +22,4 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 
 - **Instant Bitcoin Swaps**: Sub-second settlements via Lightning Network instead of 60-minute confirmations
 - **Trustless Atomic Swaps**: No bridges, no wrapped tokens - pure cryptographic guarantees
+- **Universal Polkadot Access**: One Moonbeam deployment serves all parachains via XCM
