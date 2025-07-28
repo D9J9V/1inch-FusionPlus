@@ -21,3 +21,4 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 ## Key Features
 
 - **Instant Bitcoin Swaps**: Sub-second settlements via Lightning Network instead of 60-minute confirmations
+- **Trustless Atomic Swaps**: No bridges, no wrapped tokens - pure cryptographic guarantees
