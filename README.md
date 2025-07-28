@@ -24,3 +24,4 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 - **Trustless Atomic Swaps**: No bridges, no wrapped tokens - pure cryptographic guarantees
 - **Universal Polkadot Access**: One Moonbeam deployment serves all parachains via XCM
 - **Gasless Experience**: Users don't pay gas fees - resolvers handle execution costs
+- **Enhanced Market Efficiency**: Consolidated liquidity across ecosystems reduces slippage and improves rates
