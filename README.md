@@ -17,3 +17,7 @@ Fusion+ opinionated implementation for Bitcoin (Lightning) and Polkadot (XCM).
 ## Solution
 
 Polaris preserves the trustless, intent-based architecture while leveraging each ecosystem's strengths: Lightning invoices serve as HTLCs for instant Bitcoin swaps, and XCM via Moonbeam enables any Polkadot parachain to participate in cross-chain swaps.
+
+## Key Features
+
+- **Instant Bitcoin Swaps**: Sub-second settlements via Lightning Network instead of 60-minute confirmations
