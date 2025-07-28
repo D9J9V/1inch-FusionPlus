@@ -9,3 +9,7 @@ Fusion+ opinionated implementation for Bitcoin (Lightning) and Polkadot (XCM).
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-363636)](https://soliditylang.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Problem
+
+1inch Fusion+ enables trustless cross-chain swaps between EVM chains and Solana (SVM) through HTLCs and intent-based architecture, but other major non-EVM ecosystems like Bitcoin and Polkadot remain isolated from this liquidity network, forcing users to rely on centralized bridges or forgo access to these blockchain ecosystems entirely.
