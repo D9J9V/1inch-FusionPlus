@@ -13,3 +13,7 @@ Fusion+ opinionated implementation for Bitcoin (Lightning) and Polkadot (XCM).
 ## Problem
 
 1inch Fusion+ enables trustless cross-chain swaps between EVM chains and Solana (SVM) through HTLCs and intent-based architecture, but other major non-EVM ecosystems like Bitcoin and Polkadot remain isolated from this liquidity network, forcing users to rely on centralized bridges or forgo access to these blockchain ecosystems entirely.
+
+## Solution
+
+Polaris preserves the trustless, intent-based architecture while leveraging each ecosystem's strengths: Lightning invoices serve as HTLCs for instant Bitcoin swaps, and XCM via Moonbeam enables any Polkadot parachain to participate in cross-chain swaps.
