@@ -30,20 +30,20 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 
 ```
                             ┌─────────────────┐
-                            │     Polaris     │
-                            │  Resolver Network│
+                            │     Polaris                │
+                            │  Resolver Network          │
                             └────────┬────────┘
-                                     │
+                                           │
                 ┌────────────────────┼────────────────────┐
-                │                    │                    │
-                ▼                    ▼                    ▼
+                │                                 │                                  │
+                ▼                                 ▼                                  ▼
     ┌───────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-    │  Bitcoin/Lightning│  │   EVM Chains    │  │    Polkadot     │
+    │  Bitcoin/Lightning             │  │   EVM Chains               │  │    Polkadot                │
     ├───────────────────┤  ├─────────────────┤  ├─────────────────┤
-    │                   │  │                 │  │                 │
-    │ • HODL Invoices  │  │ • 1inch Escrow  │  │ • Moonbeam Hub  │
-    │ • Instant BTC    │  │ • HTLC Contracts│  │ • XCM Router    │
-    │ • Payment Hash   │  │ • Token Locks   │  │ • Any Parachain │
-    │                   │  │                 │  │                 │
+    │                                │  │                            │  │                            │
+    │ • HODL Invoices                │  │ • 1inch Escrow             │  │ • Moonbeam Hub             │
+    │ • Instant BTC                  │  │ • HTLC Contracts           │  │ • XCM Router               │
+    │ • Payment Hash                 │  │ • Token Locks              │  │ • Any Parachain            │
+    │                                │  │                            │  │                            │
     └───────────────────┘  └─────────────────┘  └─────────────────┘
 ```
