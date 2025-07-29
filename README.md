@@ -25,3 +25,25 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 - **Universal Polkadot Access**: One Moonbeam deployment serves all parachains via XCM
 - **Gasless Experience**: Users don't pay gas fees - resolvers handle execution costs
 - **Enhanced Market Efficiency**: Consolidated liquidity across ecosystems reduces slippage and improves rates
+
+## Architecture
+
+```
+                            ┌─────────────────┐
+                            │     Polaris     │
+                            │  Resolver Network│
+                            └────────┬────────┘
+                                     │
+                ┌────────────────────┼────────────────────┐
+                │                    │                    │
+                ▼                    ▼                    ▼
+    ┌───────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+    │  Bitcoin/Lightning│  │   EVM Chains    │  │    Polkadot     │
+    ├───────────────────┤  ├─────────────────┤  ├─────────────────┤
+    │                   │  │                 │  │                 │
+    │ • HODL Invoices  │  │ • 1inch Escrow  │  │ • Moonbeam Hub  │
+    │ • Instant BTC    │  │ • HTLC Contracts│  │ • XCM Router    │
+    │ • Payment Hash   │  │ • Token Locks   │  │ • Any Parachain │
+    │                   │  │                 │  │                 │
+    └───────────────────┘  └─────────────────┘  └─────────────────┘
+```
