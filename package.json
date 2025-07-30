@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typegen": "npx supabase gen types typescript --linked > ./app/types/database.types.ts"
+    "typegen": "npx supabase gen types typescript --linked > ./app/types/database.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
