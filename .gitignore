@@ -36,3 +36,7 @@ next-env.d.ts
 
 # supabase
 .supabase
+
+# temporary files
+.temp
+*.tmp
