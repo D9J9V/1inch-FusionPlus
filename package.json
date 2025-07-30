@@ -11,6 +11,7 @@
     "typegen": "npx supabase gen types typescript --linked > ./app/types/database.types.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.6.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
