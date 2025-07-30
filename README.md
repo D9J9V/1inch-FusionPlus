@@ -47,3 +47,6 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
     │                                │  │                            │  │                            │
     └───────────────────┘  └─────────────────┘  └─────────────────┘
 ```
+
+## Developer Setup
+- To test this project locally you'll need a supabase instance connection. It's used to store orders before execution. Apply the migration to you PG, add the envs used by the clients and run `npx supabase link` to be able to run the typegen command on the package.json
