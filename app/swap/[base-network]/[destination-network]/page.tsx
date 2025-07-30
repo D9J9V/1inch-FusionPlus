@@ -1,11 +1,13 @@
-export default function SwapPage({
+export default async function SwapPage({
   params
 }: {
-  params: { 'base-network': string; 'destination-network': string }
+  params: Promise<{ 'base-network': string; 'destination-network': string }>
 }) {
+  const { 'base-network': baseNetwork, 'destination-network': destinationNetwork } = await params;
+  
   return (
     <p>
-      This page creates swaps from {params['base-network']} to {params['destination-network']}
+      This page creates swaps from {baseNetwork} to {destinationNetwork}
     </p>
   )
 }
