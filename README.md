@@ -1,6 +1,6 @@
 # Polaris
 
-Fusion+ opinionated implementation for Bitcoin (Lightning) and Polkadot (XCM).
+Fusion+ opinionated implementation for Bitcoin (Lightning), EVM chains, and Solana (SVM).
 
 [![ETHGlobal Unite](https://img.shields.io/badge/ETHGlobal-Unite%202025-purple)](https://ethglobal.com/events/unite)
 [![1inch Fusion+](https://img.shields.io/badge/Powered%20by-1inch%20Fusion+-blue)](https://docs.1inch.io/docs/fusion-swap/introduction)
@@ -12,17 +12,16 @@ Fusion+ opinionated implementation for Bitcoin (Lightning) and Polkadot (XCM).
 
 ## Problem
 
-1inch Fusion+ enables trustless cross-chain swaps between EVM chains and Solana (SVM) through HTLCs and intent-based architecture, but other major non-EVM ecosystems like Bitcoin and Polkadot remain isolated from this liquidity network, forcing users to rely on centralized bridges or forgo access to these blockchain ecosystems entirely.
+1inch Fusion+ enables trustless cross-chain swaps between EVM chains and Solana (SVM) through HTLCs and intent-based architecture, but other major non-EVM ecosystems like Bitcoin remain isolated from this liquidity network, forcing users to rely on centralized bridges or forgo access to these blockchain ecosystems entirely.
 
 ## Solution
 
-Polaris preserves the trustless, intent-based architecture while leveraging each ecosystem's strengths: Lightning invoices serve as HTLCs for instant Bitcoin swaps, and XCM via Moonbeam enables any Polkadot parachain to participate in cross-chain swaps.
+Polaris preserves the trustless, intent-based architecture while leveraging each ecosystem's strengths: Lightning invoices serve as HTLCs for instant Bitcoin swaps.
 
 ## Key Features
 
 - **Instant Bitcoin Swaps**: Sub-second settlements via Lightning Network instead of 60-minute confirmations
 - **Trustless Atomic Swaps**: No bridges, no wrapped tokens - pure cryptographic guarantees
-- **Universal Polkadot Access**: One Moonbeam deployment serves all parachains via XCM
 - **Gasless Experience**: Users don't pay gas fees - resolvers handle execution costs
 - **Enhanced Market Efficiency**: Consolidated liquidity across ecosystems reduces slippage and improves rates
 
@@ -30,21 +29,21 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 
 ```
                             ┌─────────────────┐
-                            │     Polaris                │
+                            │     Polaris     │
                             │  Resolver Network          │
                             └────────┬────────┘
-                                           │
+                                     │
                 ┌────────────────────┼────────────────────┐
-                │                                 │                                  │
-                ▼                                 ▼                                  ▼
+                │                    │                    │
+                ▼                    ▼                    ▼
     ┌───────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-    │  Bitcoin/Lightning             │  │   EVM Chains               │  │    Polkadot                │
+    │  Bitcoin/Lightning │  │   EVM Chains    │  │     Solana      │
     ├───────────────────┤  ├─────────────────┤  ├─────────────────┤
-    │                                │  │                            │  │                            │
-    │ • HODL Invoices                │  │ • 1inch Escrow             │  │ • Moonbeam Hub             │
-    │ • Instant BTC                  │  │ • HTLC Contracts           │  │ • XCM Router               │
-    │ • Payment Hash                 │  │ • Token Locks              │  │ • Any Parachain            │
-    │                                │  │                            │  │                            │
+    │                   │  │                 │  │                 │
+    │ • HODL Invoices   │  │ • 1inch Escrow  │  │ • Program Calls │
+    │ • Instant BTC     │  │ • HTLC Contracts│  │ • Token Accounts│
+    │ • Payment Hash    │  │ • Token Locks   │  │ • SPL Tokens    │
+    │                   │  │                 │  │                 │
     └───────────────────┘  └─────────────────┘  └─────────────────┘
 ```
 
