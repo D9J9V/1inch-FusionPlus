@@ -1,8 +1,164 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'crypto';
+
+// In production, this would use ln-service to connect to a real LND node
+// For demo purposes, we'll simulate the Lightning Network operations
+
+interface LightningHTLCRequest {
+  htlcHash: string;
+  amountSats: number;
+  description?: string;
+  expirySeconds?: number;
+}
+
+interface HODLInvoice {
+  paymentRequest: string;
+  paymentHash: string;
+  expiresAt: number;
+  amountSats: number;
+}
 
 export async function POST(request: NextRequest) {
-  return NextResponse.json({
-    success: true,
-    message: 'Lightning Network handler'
-  });
+  try {
+    const body: LightningHTLCRequest = await request.json();
+    const { htlcHash, amountSats, description = 'Cross-chain swap', expirySeconds = 3600 } = body;
+    
+    // Validate inputs
+    if (!htlcHash || !amountSats) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required parameters' },
+        { status: 400 }
+      );
+    }
+    
+    // In a real implementation, we would:
+    // 1. Connect to LND node using ln-service
+    // 2. Create a HODL invoice with the htlcHash as the payment hash
+    // 3. Return the BOLT11 invoice string
+    
+    // For demo, create a simulated HODL invoice
+    const hodlInvoice = createSimulatedHODLInvoice(
+      htlcHash,
+      amountSats,
+      description,
+      expirySeconds
+    );
+    
+    // Store invoice details (in production, this would be in a database)
+    // This allows the resolver to track and settle the invoice when the secret is revealed
+    
+    return NextResponse.json({
+      success: true,
+      invoice: hodlInvoice,
+      message: 'HODL invoice created successfully'
+    });
+  } catch (error) {
+    console.error('Error creating Lightning HODL invoice:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create HODL invoice' },
+      { status: 500 }
+    );
+  }
+}
+
+// GET endpoint to check invoice status
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const paymentHash = searchParams.get('paymentHash');
+    
+    if (!paymentHash) {
+      return NextResponse.json(
+        { success: false, error: 'Payment hash required' },
+        { status: 400 }
+      );
+    }
+    
+    // In production, check actual invoice status from LND
+    // For demo, return simulated status
+    
+    return NextResponse.json({
+      success: true,
+      status: 'pending', // Could be: pending, settled, cancelled, expired
+      paymentHash,
+      settledAt: null,
+      preimage: null
+    });
+  } catch (error) {
+    console.error('Error checking invoice status:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to check invoice status' },
+      { status: 500 }
+    );
+  }
+}
+
+function createSimulatedHODLInvoice(
+  htlcHash: string,
+  amountSats: number,
+  description: string,
+  expirySeconds: number
+): HODLInvoice {
+  // Remove '0x' prefix if present
+  const cleanHash = htlcHash.startsWith('0x') ? htlcHash.slice(2) : htlcHash;
+  
+  // In production, this would use ln-service to create a real HODL invoice
+  // For demo, we create a placeholder that looks like a BOLT11 invoice
+  
+  const expiresAt = Math.floor(Date.now() / 1000) + expirySeconds;
+  
+  // Simulated BOLT11 invoice (not valid for real Lightning Network)
+  const paymentRequest = `lnbc${amountSats}n1p0${cleanHash.slice(0, 10)}...`;
+  
+  return {
+    paymentRequest,
+    paymentHash: htlcHash,
+    expiresAt,
+    amountSats
+  };
+}
+
+// Additional endpoint to settle HODL invoice when secret is revealed
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { paymentHash, preimage } = body;
+    
+    if (!paymentHash || !preimage) {
+      return NextResponse.json(
+        { success: false, error: 'Payment hash and preimage required' },
+        { status: 400 }
+      );
+    }
+    
+    // Verify that sha256(preimage) === paymentHash
+    const calculatedHash = createHash('sha256')
+      .update(Buffer.from(preimage.slice(2), 'hex'))
+      .digest('hex');
+    
+    if (`0x${calculatedHash}` !== paymentHash) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid preimage' },
+        { status: 400 }
+      );
+    }
+    
+    // In production, this would:
+    // 1. Use ln-service to settle the HODL invoice
+    // 2. Update the invoice status in the database
+    
+    return NextResponse.json({
+      success: true,
+      message: 'HODL invoice settled',
+      paymentHash,
+      preimage,
+      settledAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error settling HODL invoice:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to settle invoice' },
+      { status: 500 }
+    );
+  }
 }
