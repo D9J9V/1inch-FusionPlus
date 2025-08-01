@@ -14,7 +14,11 @@
     "@supabase/ssr": "^0.6.1",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "ethers": "^6.9.0",
+    "bitcoinjs-lib": "^6.1.5",
+    "ln-service": "^57.1.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@types/node": "latest",
