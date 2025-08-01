@@ -1,6 +1,6 @@
 # Polaris
 
-Fusion+ opinionated implementation for Bitcoin (Lightning), EVM chains, and Solana (SVM).
+Fusion+ opinionated implementation for Bitcoin, Lightning, and EVM chains.
 
 [![ETHGlobal Unite](https://img.shields.io/badge/ETHGlobal-Unite%202025-purple)](https://ethglobal.com/events/unite)
 [![1inch Fusion+](https://img.shields.io/badge/Powered%20by-1inch%20Fusion+-blue)](https://docs.1inch.io/docs/fusion-swap/introduction)
@@ -16,7 +16,7 @@ Fusion+ opinionated implementation for Bitcoin (Lightning), EVM chains, and Sola
 
 ## Solution
 
-Polaris preserves the trustless, intent-based architecture while leveraging each ecosystem's strengths: Lightning invoices serve as HTLCs for instant Bitcoin swaps.
+Polaris preserves the trustless, intent-based architecture while leveraging each ecosystem's strengths: Lightning invoices serve as HTLCs for instant Bitcoin swaps, and native Bitcoin scripting for a native BTC approach, inspired on the design of Lightning Network itself.
 
 ## Key Features
 
