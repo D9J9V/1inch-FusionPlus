@@ -44,4 +44,34 @@ contract EVMHtlcEscrow {
     constructor() {
         // Empty constructor for now
     }
+
+    function initiateSwap(
+        bytes32 htlcHash,
+        address token,
+        uint256 amount,
+        uint256 timeoutDuration
+    ) external {
+        require(swaps[htlcHash].amount == 0, "Swap already exists");
+        require(amount > 0, "Amount must be greater than 0");
+        require(timeoutDuration > 0, "Timeout duration must be greater than 0");
+        
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+        
+        swaps[htlcHash] = Swap({
+            htlcHash: htlcHash,
+            recipient: payable(msg.sender),
+            token: token,
+            amount: amount,
+            timeout: block.timestamp + timeoutDuration
+        });
+        
+        emit SwapInitiated(
+            htlcHash,
+            msg.sender,
+            msg.sender,
+            token,
+            amount,
+            block.timestamp + timeoutDuration
+        );
+    }
 }
