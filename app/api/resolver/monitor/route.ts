@@ -35,16 +35,22 @@ export async function GET(request: NextRequest) {
       latestBlock
     );
     
-    const formattedEvents = events.map(event => ({
-      htlcHash: event.args?.htlcHash,
-      sender: event.args?.sender,
-      recipient: event.args?.recipient,
-      token: event.args?.token,
-      amount: event.args?.amount?.toString(),
-      timeout: event.args?.timeout?.toString(),
-      blockNumber: event.blockNumber,
-      transactionHash: event.transactionHash
-    }));
+    const formattedEvents = events.map(event => {
+      // Type guard to ensure we have an EventLog with args
+      if ('args' in event && event.args) {
+        return {
+          htlcHash: event.args.htlcHash,
+          sender: event.args.sender,
+          recipient: event.args.recipient,
+          token: event.args.token,
+          amount: event.args.amount?.toString(),
+          timeout: event.args.timeout?.toString(),
+          blockNumber: event.blockNumber,
+          transactionHash: event.transactionHash
+        };
+      }
+      return null;
+    }).filter(event => event !== null);
     
     return NextResponse.json({
       success: true,
