@@ -74,4 +74,21 @@ contract EVMHtlcEscrow {
             block.timestamp + timeoutDuration
         );
     }
+
+    function claim(bytes32 secret) external {
+        bytes32 hash = sha256(abi.encodePacked(secret));
+        Swap storage swap = swaps[hash];
+        
+        require(swap.amount > 0, "Swap does not exist");
+        require(block.timestamp < swap.timeout, "Swap has timed out");
+        
+        uint256 amount = swap.amount;
+        address token = swap.token;
+        
+        delete swaps[hash];
+        
+        IERC20(token).safeTransfer(msg.sender, amount);
+        
+        emit SwapClaimed(hash, secret, msg.sender);
+    }
 }
