@@ -32,7 +32,11 @@ export default function SwapPage({
     return <div>Invalid chain selection</div>;
   }
 
-  const isBitcoinInvolved = destinationNetwork === ChainId.LIGHTNING || baseNetwork === ChainId.LIGHTNING;
+  const isBitcoinInvolved = 
+    destinationNetwork === ChainId.LIGHTNING || 
+    baseNetwork === ChainId.LIGHTNING ||
+    destinationNetwork === ChainId.BTC || 
+    baseNetwork === ChainId.BTC;
 
   // Generate random secret and calculate hash
   const generateSecret = () => {
@@ -94,7 +98,7 @@ export default function SwapPage({
       const { secret: newSecret, hash } = generateSecret();
       
       // Step 2: For EVM to Bitcoin swaps
-      if (destinationNetwork === ChainId.LIGHTNING) {
+      if (destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC) {
         setStatus('Creating cross-chain swap...');
         
         // Call the appropriate API based on swap method

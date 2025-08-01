@@ -3,8 +3,10 @@ export enum ChainId {
   // EVM Chains
   ETHEREUM = "ethereum",
   BASE = "base",
+  UNICHAIN = "unichain",
 
   // Bitcoin Ecosystem
+  BTC = "btc",
   LIGHTNING = "lightning",
 
   // Polkadot Ecosystem
@@ -15,6 +17,7 @@ export enum ChainId {
 // 2. Chain Type Categories
 export enum ChainType {
   EVM = "evm",
+  BITCOIN = "bitcoin",
   LIGHTNING = "lightning",
   SUBSTRATE = "substrate",
 }
@@ -42,6 +45,19 @@ export const chains: Record<ChainId, ChainMetadata> = {
     name: "Base",
     explorerUrl: "https://basescan.org",
     rpcUrl: "https://base.rpc.thirdweb.com",
+  },
+  [ChainId.UNICHAIN]: {
+    id: ChainId.UNICHAIN,
+    type: ChainType.EVM,
+    name: "Unichain",
+    explorerUrl: "https://uniscan.io", // Update when available
+    rpcUrl: "https://unichain.rpc.io", // Update when available
+  },
+  [ChainId.BTC]: {
+    id: ChainId.BTC,
+    type: ChainType.BITCOIN,
+    name: "Bitcoin",
+    explorerUrl: "https://mempool.space",
   },
   [ChainId.LIGHTNING]: {
     id: ChainId.LIGHTNING,

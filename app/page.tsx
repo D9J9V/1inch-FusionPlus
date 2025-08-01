@@ -10,21 +10,36 @@ export default function Home() {
       <ul>
         <li>
           <Link href="/swap/ethereum/lightning">
-            Ethereum → Bitcoin (Lightning Network)
+            Ethereum → Lightning Network
+          </Link>
+        </li>
+        <li>
+          <Link href="/swap/ethereum/btc">
+            Ethereum → Bitcoin (On-chain)
           </Link>
         </li>
         <li>
           <Link href="/swap/base/lightning">
-            Base → Bitcoin (Lightning Network)
+            Base → Lightning Network
+          </Link>
+        </li>
+        <li>
+          <Link href="/swap/base/btc">
+            Base → Bitcoin (On-chain)
+          </Link>
+        </li>
+        <li>
+          <Link href="/swap/unichain/lightning">
+            Unichain → Lightning Network
           </Link>
         </li>
         <li>
           <Link href="/swap/lightning/ethereum">
-            Bitcoin → Ethereum
+            Lightning Network → Ethereum
           </Link>
         </li>
         <li>
-          <Link href="/swap/lightning/base">
+          <Link href="/swap/btc/base">
             Bitcoin → Base
           </Link>
         </li>
