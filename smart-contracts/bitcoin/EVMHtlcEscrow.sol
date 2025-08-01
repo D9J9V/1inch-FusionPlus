@@ -91,4 +91,22 @@ contract EVMHtlcEscrow {
         
         emit SwapClaimed(hash, secret, msg.sender);
     }
+
+    function refund(bytes32 htlcHash) external {
+        Swap storage swap = swaps[htlcHash];
+        
+        require(swap.amount > 0, "Swap does not exist");
+        require(block.timestamp >= swap.timeout, "Swap has not timed out yet");
+        require(msg.sender == swap.recipient, "Only recipient can refund");
+        
+        uint256 amount = swap.amount;
+        address token = swap.token;
+        address recipient = swap.recipient;
+        
+        delete swaps[htlcHash];
+        
+        IERC20(token).safeTransfer(recipient, amount);
+        
+        emit SwapRefunded(htlcHash, recipient);
+    }
 }
