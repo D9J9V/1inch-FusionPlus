@@ -50,6 +50,62 @@ export default function SwapPage({
     return { secret: secretHex, hash };
   };
 
+  // Poll for swap status
+  const startStatusPolling = (htlcHash: string) => {
+    setSwapState('polling');
+    
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/swap-status/${htlcHash}`);
+        const data = await response.json();
+        
+        if (!data.success) {
+          console.error('Failed to fetch status:', data.error);
+          return;
+        }
+        
+        // Update status based on response
+        switch (data.status) {
+          case 'pending':
+            setStatus('Waiting for Bitcoin confirmation...');
+            break;
+          case 'ready_to_claim':
+            setStatus('Ready to claim! Bitcoin payment confirmed.');
+            setSwapState('ready');
+            if (data.swapDetails?.invoice) {
+              setInvoice(data.swapDetails.invoice);
+            }
+            // Stop polling once ready
+            clearInterval(interval);
+            break;
+          case 'claimed':
+            setStatus('Swap completed successfully!');
+            setSwapState('claimed');
+            clearInterval(interval);
+            break;
+          case 'expired':
+            setStatus('Swap expired. Please try again.');
+            setSwapState('idle');
+            clearInterval(interval);
+            break;
+        }
+      } catch (error) {
+        console.error('Error polling status:', error);
+      }
+    }, 5000); // Poll every 5 seconds
+    
+    setPollingInterval(interval);
+  };
+
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [pollingInterval]);
+
   // Fetch price quote
   const fetchPriceQuote = async () => {
     if (!amount || parseFloat(amount) <= 0) return;
