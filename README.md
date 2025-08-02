@@ -28,23 +28,32 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 ## Architecture
 
 ```
-                            ┌─────────────────┐
-                            │     Polaris     │
-                            │  Resolver Network          │
-                            └────────┬────────┘
-                                     │
-                ┌────────────────────┼────────────────────┐
-                │                    │                    │
-                ▼                    ▼                    ▼
-    ┌───────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-    │  Bitcoin/Lightning │  │   EVM Chains    │  │     Solana      │
-    ├───────────────────┤  ├─────────────────┤  ├─────────────────┤
-    │                   │  │                 │  │                 │
-    │ • HODL Invoices   │  │ • 1inch Escrow  │  │ • Program Calls │
-    │ • Instant BTC     │  │ • HTLC Contracts│  │ • Token Accounts│
-    │ • Payment Hash    │  │ • Token Locks   │  │ • SPL Tokens    │
-    │                   │  │                 │  │                 │
-    └───────────────────┘  └─────────────────┘  └─────────────────┘
+                                ┌─────────────────┐
+                                │     User UI     │
+                                └───────┬─────────┘
+                                        │
+                                        ▼
+                                ┌─────────────────┐
+                                │    Polaris API  │
+                                └───────┬─────────┘
+                                        │
+                                        ▼
+                                ┌─────────────────┐
+                                │    Supabase     │
+                                └───────┬─────────┘
+                                        │
+┌───────────────────────────────────────┼───────────────────────────────────────┐
+│                                       │                                       │
+▼                                       ▼                                       ▼
+┌─────────────────┐             ┌─────────────────┐             ┌─────────────────┐
+│ Bitcoin/Lightning │             │   EVM Chains    │             │  Resolver Network │
+├─────────────────┤             ├─────────────────┤             ├─────────────────┤
+│                 │             │                 │             │                 │
+│ • HODL Invoices │             │ • 1inch Escrow  │             │ • Monitors EVM  │
+│ • Instant BTC   │             │ • HTLC Contracts│             │ • Executes BTC  │
+│ • Payment Hash  │             │ • Token Locks   │             │ • Claims Funds  │
+│                 │             │                 │             │                 │
+└─────────────────┘             └─────────────────┘             └─────────────────┘
 ```
   The core task is to create a trustless, intent-based swap between an EVM chain and the Bitcoin ecosystem, mirroring the Fusion Plus
   architecture. This requires implementing an escrow/HTLC mechanism on the Bitcoin side and an orchestrator (resolver/relayer) to
