@@ -18,12 +18,13 @@ contract EVMHtlcEscrowTest is Test {
     
     address public user = address(0x1);
     address public resolver = address(0x2);
+    address public treasury = address(0x3);
     
     bytes32 public secret = keccak256("test_secret");
     bytes32 public htlcHash;
     
     function setUp() public {
-        escrow = new EVMHtlcEscrow();
+        escrow = new EVMHtlcEscrow(treasury);
         token = new MockERC20("Test Token", "TEST");
         
         // Calculate htlc hash from secret
