@@ -93,62 +93,41 @@ export default function SwapPage({
     }
 
     setLoading(true);
-    setStatus('Initiating swap...');
+    setSwapState('processing');
+    setStatus('Initiating automated swap...');
 
     try {
-      // Step 1: Generate secret and hash
-      const { secret: newSecret, hash } = generateSecret();
+      // Get user's address (in production, this would come from wallet connection)
+      const userAddress = '0x...'; // TODO: Connect wallet
       
-      // Step 2: For EVM to Bitcoin swaps
-      if (destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC) {
-        setStatus('Creating cross-chain swap...');
-        
-        // Call the appropriate API based on swap method
-        if (swapMethod === 'lightning') {
-          setStatus('Creating Lightning invoice...');
-          const response = await fetch('/api/resolver/lightning', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              htlcHash: hash,
-              amountSats: Math.floor(priceQuote * 100000000),
-              description: `Swap from ${chains[baseNetwork].name} to ${chains[destinationNetwork].name}`
-            })
-          });
-          
-          const data = await response.json();
-          if (data.success) {
-            setInvoice(data.invoice.paymentRequest);
-            setStatus('Lightning invoice created! Lock your tokens on the source chain, then pay the invoice to complete the swap.');
-          } else {
-            throw new Error(data.error || 'Failed to create Lightning invoice');
-          }
-        } else {
-          setStatus('Creating Bitcoin HTLC...');
-          const response = await fetch('/api/resolver/native-btc', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              htlcHash: hash,
-              amount: Math.floor(priceQuote * 100000000),
-              recipientAddress: recipientAddress,
-              timeoutBlocks: 144
-            })
-          });
-          
-          const data = await response.json();
-          if (data.success) {
-            setStatus(`Bitcoin HTLC created at address: ${data.htlcAddress}`);
-          } else {
-            throw new Error(data.error || 'Failed to create Bitcoin HTLC');
-          }
-        }
-      } else {
-        setStatus('This demo currently supports EVM to Bitcoin swaps only');
+      // Call the unified execute-swap endpoint
+      const response = await fetch('/api/execute-swap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fromToken: '0x...', // TODO: Get actual token address
+          toToken: swapMethod === 'lightning' ? 'LN-BTC' : recipientAddress,
+          amount: ethers.parseUnits(amount, 18).toString(), // Assuming 18 decimals
+          userAddress,
+          swapType: swapMethod
+        })
+      });
+      
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to execute swap');
       }
+      
+      setHtlcHash(data.htlcHash);
+      setStatus('Swap initiated! Monitoring progress...');
+      
+      // Start polling for status
+      startStatusPolling(data.htlcHash);
+      
     } catch (error) {
       console.error('Swap error:', error);
       setStatus(`Error: ${error instanceof Error ? error.message : 'Failed to initiate swap'}`);
+      setSwapState('idle');
     } finally {
       setLoading(false);
     }
