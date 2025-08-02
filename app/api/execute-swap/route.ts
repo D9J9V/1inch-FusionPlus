@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 import { createHash, randomBytes } from 'crypto';
 import { SwapErrorHandler, ErrorCode } from '@/utils/error-handler';
-import { SwapStateMachine } from '@/api/resolver/state-machine';
+import { SwapStateMachine } from "../resolver/state-machine";
 import { createClient } from '@/utils/supabase/server';
 
 interface ExecuteSwapRequest {

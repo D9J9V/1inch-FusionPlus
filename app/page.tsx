@@ -15,9 +15,9 @@ import {
   Activity,
   ChevronDown,
 } from "lucide-react";
-import Button from "./components/ui/Button";
-import { Card, CardContent, CardHeader } from "./components/ui/Card";
-import AsciiHero from "./components/AsciiHero";
+import Button from "@/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import AsciiHero from "@/components/AsciiHero";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -112,7 +112,6 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-
         {/* Hero Content */}
         <div className="relative z-10 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main Title */}
