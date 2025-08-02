@@ -34,8 +34,8 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
                                         │
                                         ▼
                                 ┌─────────────────┐
-                                │ Swap Orchestrator│
-                                │      (API)       │
+                                │Swap Orchestrator│
+                                │     (API)       │
                                 └───────┬─────────┘
                                         │
                                         ▼
@@ -48,13 +48,13 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 │                                       │                                       │
 ▼                                       ▼                                       ▼
 ┌─────────────────┐             ┌─────────────────┐             ┌─────────────────┐
-│  Bitcoin Network │             │ EVM Blockchains │             │ Automated Market │
-│                 │             │                 │             │     Makers       │
+│ Bitcoin Network │             │ EVM Blockchains │             │ Automated Market│
+│                 │             │                 │             │     Makers      │
 ├─────────────────┤             ├─────────────────┤             ├─────────────────┤
 │                 │             │                 │             │                 │
-│ • Lightning HTLCs│             │ • Escrow Contracts│           │ • Watch Orders  │
-│ • Native BTC    │             │ • HTLC Locks    │             │ • Execute Swaps │
-│ • Hash Preimages│             │ • ERC20 Support │             │ • Claim Rewards │
+│ • Lightning HTLC│             │• Escrow Contract│             │ • Watch Orders  │
+│ • Native BTC    │             │• HTLC Locks     │             │ • Execute Swaps │
+│ • Hash Preimages│             │• ERC20 Support  │             │ • Claim Rewards │
 │                 │             │                 │             │                 │
 └─────────────────┘             └─────────────────┘             └─────────────────┘
 ```
