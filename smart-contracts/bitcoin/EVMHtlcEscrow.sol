@@ -107,6 +107,10 @@ contract EVMHtlcEscrow {
         emit SwapClaimed(hash, secret, msg.sender);
     }
 
+    function calculateFee(uint256 amount) external pure returns (uint256) {
+        return (amount * FEE_BASIS_POINTS) / 10000;
+    }
+    
     function refund(bytes32 htlcHash) external {
         Swap storage swap = swaps[htlcHash];
         
