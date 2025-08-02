@@ -20,6 +20,10 @@ contract EVMHtlcEscrow {
     }
 
     mapping(bytes32 => Swap) public swaps;
+    
+    // Fee configuration
+    uint256 public constant FEE_BASIS_POINTS = 30; // 0.3% = 30 basis points
+    address public immutable treasuryAddress;
 
     event SwapInitiated(
         bytes32 indexed htlcHash,
