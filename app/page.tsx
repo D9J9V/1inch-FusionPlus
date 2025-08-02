@@ -116,16 +116,10 @@ export default function Home() {
         <div className="relative z-10 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main Title */}
           <div className="mb-8">
-            <div className="flex items-center justify-center mb-6">
-              <div className="relative"></div>
-            </div>
-
-            <div className="pt-20">
-              <AsciiHero />
-            </div>
+            <AsciiHero />
           </div>
 
-          {/* CTA Buttons */}
+          {/* Swap Button */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
             <Button
               size="xl"
@@ -135,15 +129,6 @@ export default function Home() {
               className="min-w-[200px]"
             >
               Start Swap
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="xl"
-              leftIcon={<Activity className="w-5 h-5" />}
-              className="min-w-[200px]"
-            >
-              Dashboard
             </Button>
           </div>
 
