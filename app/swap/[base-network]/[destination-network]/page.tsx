@@ -22,6 +22,7 @@ export default function SwapPage({
   const [recipientAddress, setRecipientAddress] = useState('');
   const [swapState, setSwapState] = useState<'idle' | 'processing' | 'polling' | 'ready' | 'claimed'>('idle');
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [feeAmount, setFeeAmount] = useState<number>(0);
 
   useEffect(() => {
     params.then(p => {
@@ -122,7 +123,12 @@ export default function SwapPage({
       const fromRate = mockRates[baseNetwork === ChainId.LIGHTNING ? 'BTC' : 'ETH'] || 1;
       const toRate = mockRates[destinationNetwork === ChainId.LIGHTNING ? 'BTC' : 'ETH'] || 1;
       
-      setPriceQuote(parseFloat(amount) * (fromRate / toRate));
+      const quote = parseFloat(amount) * (fromRate / toRate);
+      setPriceQuote(quote);
+      
+      // Calculate fee (0.3%)
+      const fee = quote * 0.003;
+      setFeeAmount(fee);
     } catch (error) {
       console.error('Error fetching price:', error);
       setStatus('Error fetching price quote');
