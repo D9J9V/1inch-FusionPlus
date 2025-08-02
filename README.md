@@ -29,29 +29,32 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 
 ```
                                 ┌─────────────────┐
-                                │     User UI     │
+                                │   Frontend App  │
                                 └───────┬─────────┘
                                         │
                                         ▼
                                 ┌─────────────────┐
-                                │    Polaris API  │
+                                │ Swap Orchestrator│
+                                │      (API)       │
                                 └───────┬─────────┘
                                         │
                                         ▼
                                 ┌─────────────────┐
-                                │    Supabase     │
+                                │  Order Database │
+                                │   (Supabase)    │
                                 └───────┬─────────┘
                                         │
 ┌───────────────────────────────────────┼───────────────────────────────────────┐
 │                                       │                                       │
 ▼                                       ▼                                       ▼
 ┌─────────────────┐             ┌─────────────────┐             ┌─────────────────┐
-│ Bitcoin/Lightning │             │   EVM Chains    │             │  Resolver Network │
+│  Bitcoin Network │             │ EVM Blockchains │             │ Automated Market │
+│                 │             │                 │             │     Makers       │
 ├─────────────────┤             ├─────────────────┤             ├─────────────────┤
 │                 │             │                 │             │                 │
-│ • HODL Invoices │             │ • 1inch Escrow  │             │ • Monitors EVM  │
-│ • Instant BTC   │             │ • HTLC Contracts│             │ • Executes BTC  │
-│ • Payment Hash  │             │ • Token Locks   │             │ • Claims Funds  │
+│ • Lightning HTLCs│             │ • Escrow Contracts│           │ • Watch Orders  │
+│ • Native BTC    │             │ • HTLC Locks    │             │ • Execute Swaps │
+│ • Hash Preimages│             │ • ERC20 Support │             │ • Claim Rewards │
 │                 │             │                 │             │                 │
 └─────────────────┘             └─────────────────┘             └─────────────────┘
 ```
