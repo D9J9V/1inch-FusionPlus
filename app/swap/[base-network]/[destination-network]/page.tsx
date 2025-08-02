@@ -277,7 +277,13 @@ export default function SwapPage({
         
         {priceQuote !== null && (
           <div>
-            <p>You will receive: ~{priceQuote.toFixed(8)} {destinationNetwork === ChainId.LIGHTNING ? 'BTC' : 'tokens'}</p>
+            <p>You will receive: ~{(priceQuote - feeAmount).toFixed(8)} {destinationNetwork === ChainId.LIGHTNING ? 'BTC' : 'tokens'}</p>
+            <p style={{ fontSize: '0.9em', color: '#666' }}>
+              Protocol fee (0.3%): {feeAmount.toFixed(8)} {destinationNetwork === ChainId.LIGHTNING ? 'BTC' : 'tokens'}
+            </p>
+            <p style={{ fontSize: '0.9em', color: '#666' }}>
+              Total amount: {priceQuote.toFixed(8)} {destinationNetwork === ChainId.LIGHTNING ? 'BTC' : 'tokens'}
+            </p>
           </div>
         )}
         
