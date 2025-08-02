@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Button from "./components/ui/Button";
 import { Card, CardContent, CardHeader } from "./components/ui/Card";
+import AsciiHero from "./components/AsciiHero";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -111,48 +112,6 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          {/* Large Polaris Star */}
-          <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <span className="text-8xl opacity-85">✨</span>
-          </div>
-
-          {/* Orbital Rings */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div
-              className="w-96 h-96 border border-cyber-cyan/20 rounded-full animate-spin"
-              style={{ animationDuration: "20s" }}
-            >
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-cyber-cyan rounded-full" />
-            </div>
-            <div
-              className="w-80 h-80 border border-cyber-purple/20 rounded-full animate-spin absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-              style={{
-                animationDuration: "15s",
-                animationDirection: "reverse",
-              }}
-            >
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-cyber-purple rounded-full" />
-            </div>
-          </div>
-
-          {/* Constellation Pattern */}
-          <div className="absolute inset-0 opacity-30">
-            {[...Array(50)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${2 + Math.random() * 2}s`,
-                }}
-              />
-            ))}
-          </div>
-        </div>
 
         {/* Hero Content */}
         <div className="relative z-10 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -162,24 +121,9 @@ export default function Home() {
               <div className="relative"></div>
             </div>
 
-            <h1 className="pt-20 text-6xl md:text-8xl font-display font-bold mb-6 bg-gradient-to-r from-cyber-cyan via-cyber-purple to-cyber-cyan bg-clip-text text-transparent animate-hologram">
-              POLARIS
-            </h1>
-
-            <div className="text-xl md:text-2xl font-space text-cyber-cyan/80 mb-4 uppercase tracking-widest">
-              Cross-Chain Bridge Protocol
+            <div className="pt-20">
+              <AsciiHero />
             </div>
-
-            <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-              Trustless atomic swaps between
-              <span className="text-cyber-orange font-semibold">
-                {" "}
-                Bitcoin/Lightning
-              </span>{" "}
-              and
-              <span className="text-cyber-cyan font-semibold"> EVM chains</span>
-              . Secure cross-chain transfers without intermediaries.
-            </p>
           </div>
 
           {/* CTA Buttons */}
