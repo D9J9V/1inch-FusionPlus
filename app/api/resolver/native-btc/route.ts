@@ -196,3 +196,25 @@ async function fetchUTXOs(address: string): Promise<any[]> {
     return [];
   }
 }
+
+async function broadcastTransaction(txHex: string): Promise<string> {
+  try {
+    const response = await fetch(`${BITCOIN_RPC_URL}/tx`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: txHex
+    });
+    
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to broadcast transaction: ${error}`);
+    }
+    
+    return await response.text();
+  } catch (error) {
+    console.error('Error broadcasting transaction:', error);
+    throw error;
+  }
+}
