@@ -45,8 +45,9 @@ contract EVMHtlcEscrow {
         address indexed recipient
     );
 
-    constructor() {
-        // Empty constructor for now
+    constructor(address _treasuryAddress) {
+        require(_treasuryAddress != address(0), "Invalid treasury address");
+        treasuryAddress = _treasuryAddress;
     }
 
     function initiateSwap(
