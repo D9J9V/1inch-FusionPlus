@@ -90,9 +90,19 @@ contract EVMHtlcEscrow {
         uint256 amount = swap.amount;
         address token = swap.token;
         
+        // Calculate fee (0.3% of the swap amount)
+        uint256 fee = (amount * FEE_BASIS_POINTS) / 10000;
+        uint256 amountAfterFee = amount - fee;
+        
         delete swaps[hash];
         
-        IERC20(token).safeTransfer(msg.sender, amount);
+        // Transfer amount minus fee to the claimer (resolver)
+        IERC20(token).safeTransfer(msg.sender, amountAfterFee);
+        
+        // Transfer fee to treasury
+        if (fee > 0) {
+            IERC20(token).safeTransfer(treasuryAddress, fee);
+        }
         
         emit SwapClaimed(hash, secret, msg.sender);
     }
