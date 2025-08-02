@@ -4,18 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/utils/cn";
-import {
-  Zap,
-  Activity,
-  BookOpen,
-  Settings,
-  Menu,
-  X,
-  Star,
-  Orbit,
-  Satellite,
-  Radar,
-} from "lucide-react";
+import { Menu, X, Satellite, Radar } from "lucide-react";
 
 interface NavigationProps {
   className?: string;
@@ -34,21 +23,6 @@ const Navigation: React.FC<NavigationProps> = ({ className }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navItems = [
-    {
-      name: "Bridge",
-      href: "/",
-      icon: <Zap className="w-4 h-4" />,
-      description: "Cross-chain swaps",
-    },
-    {
-      name: "Status",
-      href: "/status",
-      icon: <Activity className="w-4 h-4" />,
-      description: "Mission control",
-    },
-  ];
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -83,52 +57,13 @@ const Navigation: React.FC<NavigationProps> = ({ className }) => {
                   POLARIS
                 </span>
                 <span className="text-xs text-cyber-cyan/70 font-mono uppercase tracking-wider">
-                  Navigation System
+                  Bitcoin ↔ Ethereum
                 </span>
               </div>
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    "relative px-4 py-2 rounded-space text-sm font-space font-medium uppercase tracking-wider",
-                    "transition-all duration-300 group overflow-hidden",
-                    "hover:bg-cyber-cyan/10 hover:text-cyber-cyan",
-                    "focus:outline-none focus:ring-2 focus:ring-cyber-cyan/50",
-                    isActive(item.href)
-                      ? "text-cyber-cyan bg-cyber-cyan/10 border border-cyber-cyan/30"
-                      : "text-white/80 hover:text-white",
-                  )}
-                >
-                  {/* Background glow effect */}
-                  <div
-                    className={cn(
-                      "absolute inset-0 bg-gradient-to-r from-cyber-cyan/20 to-cyber-purple/20 opacity-0",
-                      "group-hover:opacity-100 transition-opacity duration-300",
-                      isActive(item.href) && "opacity-50",
-                    )}
-                  />
-
-                  {/* Content */}
-                  <div className="relative flex items-center space-x-2">
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </div>
-
-                  {/* Active indicator */}
-                  {isActive(item.href) && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-cyber-cyan rounded-full animate-pulse" />
-                  )}
-
-                  {/* Hover scan line */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                </Link>
-              ))}
-            </div>
+            <div className="hidden md:flex items-center space-x-1"></div>
 
             {/* Connection Status */}
             <div className="hidden md:flex items-center space-x-4">
@@ -203,56 +138,6 @@ const Navigation: React.FC<NavigationProps> = ({ className }) => {
                 </span>
               </div>
             </div>
-          </div>
-
-          {/* Menu Items */}
-          <div className="p-2">
-            {navItems.map((item, index) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "flex items-center space-x-3 p-3 rounded-space",
-                  "transition-all duration-300 group relative overflow-hidden",
-                  "hover:bg-cyber-cyan/10 hover:text-cyber-cyan",
-                  isActive(item.href)
-                    ? "text-cyber-cyan bg-cyber-cyan/10 border border-cyber-cyan/30"
-                    : "text-white/80",
-                )}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Background effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyber-cyan/20 to-cyber-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {/* Content */}
-                <div className="relative flex items-center space-x-3 flex-1">
-                  <div
-                    className={cn(
-                      "p-2 rounded-terminal border",
-                      isActive(item.href)
-                        ? "border-cyber-cyan/50 bg-cyber-cyan/10"
-                        : "border-white/20 group-hover:border-cyber-cyan/30",
-                    )}
-                  >
-                    {item.icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-space font-medium uppercase tracking-wider text-sm">
-                      {item.name}
-                    </div>
-                    <div className="text-xs text-white/60 font-mono">
-                      {item.description}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Active indicator */}
-                {isActive(item.href) && (
-                  <div className="w-1 h-8 bg-cyber-cyan rounded-full animate-pulse shadow-glow-cyan" />
-                )}
-              </Link>
-            ))}
           </div>
 
           {/* Footer */}
