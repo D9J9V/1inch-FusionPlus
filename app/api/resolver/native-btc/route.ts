@@ -14,20 +14,40 @@ const BITCOIN_NETWORK = process.env.BITCOIN_NETWORK === 'mainnet'
 const BITCOIN_RPC_URL = process.env.BITCOIN_RPC_URL || 'https://blockstream.info/testnet/api';
 const RESOLVER_BITCOIN_PRIVATE_KEY = process.env.BITCOIN_PRIVATE_KEY;
 
+// Resolver's key pair - initialized once
+let RESOLVER_KEYPAIR: any = null;
+let RESOLVER_PUBKEY_HASH: Buffer | null = null;
+
+function getResolverKeyPair() {
+  if (!RESOLVER_KEYPAIR && RESOLVER_BITCOIN_PRIVATE_KEY) {
+    RESOLVER_KEYPAIR = ECPair.fromPrivateKey(
+      Buffer.from(RESOLVER_BITCOIN_PRIVATE_KEY.replace('0x', ''), 'hex'),
+      { network: BITCOIN_NETWORK }
+    );
+    // Extract public key hash for the resolver
+    const p2pkh = bitcoin.payments.p2pkh({
+      pubkey: RESOLVER_KEYPAIR.publicKey,
+      network: BITCOIN_NETWORK
+    });
+    RESOLVER_PUBKEY_HASH = p2pkh.hash!;
+  }
+  return { keyPair: RESOLVER_KEYPAIR, pubKeyHash: RESOLVER_PUBKEY_HASH };
+}
+
 interface HTLCRequest {
-  htlcHash: string;
+  htlc_hash: string;
   amount: number; // in satoshis
-  recipientAddress: string;
-  timeoutBlocks: number;
+  recipient_address: string;
+  timeout_blocks: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: HTLCRequest = await request.json();
-    const { htlcHash, amount, recipientAddress, timeoutBlocks } = body;
+    const { htlc_hash, amount, recipient_address, timeout_blocks } = body;
     
     // Validate inputs
-    if (!htlcHash || !amount || !recipientAddress || !timeoutBlocks) {
+    if (!htlc_hash || !amount || !recipient_address || !timeout_blocks) {
       return NextResponse.json(
         { success: false, error: 'Missing required parameters' },
         { status: 400 }
@@ -36,9 +56,10 @@ export async function POST(request: NextRequest) {
     
     // Create the HTLC script
     const htlcScript = createHTLCScript(
-      Buffer.from(htlcHash.slice(2), 'hex'), // Remove '0x' prefix
-      recipientAddress,
-      timeoutBlocks
+      Buffer.from(htlc_hash.slice(2), 'hex'), // Remove '0x' prefix
+      recipient_address,
+      timeout_blocks,
+      pubKeyHash! // Pass resolver's pubkey hash
     );
     
     // Create P2SH address from the script
@@ -52,14 +73,11 @@ export async function POST(request: NextRequest) {
     }
     
     // Get resolver's Bitcoin key pair
-    if (!RESOLVER_BITCOIN_PRIVATE_KEY) {
+    const { keyPair, pubKeyHash } = getResolverKeyPair();
+    
+    if (!keyPair || !pubKeyHash) {
       throw new Error('Bitcoin private key not configured');
     }
-    
-    const keyPair = ECPair.fromPrivateKey(
-      Buffer.from(RESOLVER_BITCOIN_PRIVATE_KEY.replace('0x', ''), 'hex'),
-      { network: BITCOIN_NETWORK }
-    );
     
     const resolverAddress = bitcoin.payments.p2wpkh({
       pubkey: keyPair.publicKey,
@@ -123,10 +141,10 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      htlcAddress: p2sh.address,
-      htlcScript: htlcScript.toString('hex'),
+      htlc_address: p2sh.address,
+      htlc_script: htlcScript.toString('hex'),
       amount: amount,
-      txId: txId,
+      tx_id: txId,
       message: 'HTLC transaction broadcast successfully'
     });
   } catch (error) {
@@ -141,13 +159,26 @@ export async function POST(request: NextRequest) {
 function createHTLCScript(
   htlcHash: Buffer,
   recipientAddress: string,
-  timeoutBlocks: number
+  timeoutBlocks: number,
+  resolverPubKeyHash: Buffer
 ): Buffer {
   // Decode recipient address to get public key hash
-  const recipientPubKeyHash = bitcoin.address.toOutputScript(
+  const recipientOutput = bitcoin.address.toOutputScript(
     recipientAddress,
     BITCOIN_NETWORK
   );
+  
+  // Extract pubkey hash based on address type
+  let recipientPubKeyHash: Buffer;
+  if (recipientOutput[0] === 0x76 && recipientOutput[1] === 0xa9) {
+    // P2PKH: OP_DUP OP_HASH160 <20 bytes> OP_EQUALVERIFY OP_CHECKSIG
+    recipientPubKeyHash = recipientOutput.slice(3, 23);
+  } else if (recipientOutput[0] === 0x00 && recipientOutput[1] === 0x14) {
+    // P2WPKH: OP_0 <20 bytes>
+    recipientPubKeyHash = recipientOutput.slice(2, 22);
+  } else {
+    throw new Error('Unsupported recipient address type');
+  }
   
   // Build HTLC script
   // IF
@@ -167,7 +198,7 @@ function createHTLCScript(
       opcodes.OP_EQUALVERIFY,
       opcodes.OP_DUP,
       opcodes.OP_HASH160,
-      recipientPubKeyHash.slice(3, 23), // Extract pubkey hash from P2PKH script
+      recipientPubKeyHash,
       opcodes.OP_EQUALVERIFY,
       opcodes.OP_CHECKSIG,
     opcodes.OP_ELSE,
@@ -176,8 +207,7 @@ function createHTLCScript(
       opcodes.OP_DROP,
       opcodes.OP_DUP,
       opcodes.OP_HASH160,
-      // In production, this would be the resolver's pubkey hash
-      Buffer.from('0000000000000000000000000000000000000000', 'hex'),
+      resolverPubKeyHash,
       opcodes.OP_EQUALVERIFY,
       opcodes.OP_CHECKSIG,
     opcodes.OP_ENDIF
