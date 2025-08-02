@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createHash } from 'crypto';
+import { authenticatedLndGrpc, createHodlInvoice, settleHodlInvoice, getInvoice } from 'ln-service';
 
-// In production, this would use ln-service to connect to a real LND node
-// For demo purposes, we'll simulate the Lightning Network operations
+// Lightning node configuration
+const LND_CONFIG = {
+  cert: process.env.LND_CERT,
+  macaroon: process.env.LND_MACAROON,
+  socket: process.env.LND_HOST || 'localhost:10009'
+};
 
 interface LightningHTLCRequest {
   htlcHash: string;
