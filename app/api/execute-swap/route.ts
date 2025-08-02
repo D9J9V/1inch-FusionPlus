@@ -16,14 +16,14 @@ interface ExecuteSwapRequest {
 }
 
 // Import contract ABIs
-import BitcoinResolverABI from '@/smart-contracts/out/BitcoinResolver.sol/BitcoinResolver.json';
+import BitcoinResolverABI from '../../../smart-contracts/out/BitcoinResolver.sol/BitcoinResolver.json';
 
 const BITCOIN_RESOLVER_ADDRESS = process.env.BITCOIN_RESOLVER_ADDRESS || '';
 const RESOLVER_PRIVATE_KEY = process.env.RESOLVER_PRIVATE_KEY || '';
 const RPC_URL = process.env.EVM_RPC_URL || '';
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const stateMachine = new SwapStateMachine();
   
   try {

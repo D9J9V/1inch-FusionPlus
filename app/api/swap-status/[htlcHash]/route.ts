@@ -3,12 +3,12 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { htlcHash: string } }
+  context: { params: Promise<{ htlcHash: string }> }
 ) {
-  const supabase = createClient();
+  const supabase = await createClient();
   
   try {
-    const { htlcHash } = params;
+    const { htlcHash } = await context.params;
 
     if (!htlcHash) {
       return NextResponse.json(
