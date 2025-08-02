@@ -93,16 +93,38 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // In production, check actual invoice status from LND
-    // For demo, return simulated status
+    // Connect to LND node
+    const { lnd } = await getLndConnection();
     
-    return NextResponse.json({
-      success: true,
-      status: 'pending', // Could be: pending, settled, cancelled, expired
-      paymentHash,
-      settledAt: null,
-      preimage: null
-    });
+    try {
+      const invoice = await getInvoice({
+        lnd,
+        id: paymentHash.replace('0x', '')
+      });
+      
+      let status = 'pending';
+      if (invoice.is_confirmed) {
+        status = 'settled';
+      } else if (invoice.is_canceled) {
+        status = 'cancelled';
+      } else if (new Date(invoice.expires_at) < new Date()) {
+        status = 'expired';
+      }
+      
+      return NextResponse.json({
+        success: true,
+        status,
+        paymentHash,
+        settledAt: invoice.confirmed_at || null,
+        preimage: invoice.secret || null
+      });
+    } catch (error: any) {
+      console.error('Error checking invoice status:', error);
+      return NextResponse.json(
+        { success: false, error: error.message || 'Failed to check invoice status' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error checking invoice status:', error);
     return NextResponse.json(
