@@ -137,6 +137,41 @@ export default function SwapPage({
     }
   }, [amount]);
 
+  const claimWithSecret = async () => {
+    if (!htlcHash) {
+      setStatus('No active swap to claim');
+      return;
+    }
+    
+    setLoading(true);
+    setStatus('Revealing secret...');
+    
+    try {
+      const response = await fetch(`/api/secret/${htlcHash}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer user-token', // TODO: Add proper auth
+          'X-User-Address': '0x...' // TODO: Get from wallet
+        }
+      });
+      
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to reveal secret');
+      }
+      
+      setSecret(data.secret);
+      setStatus('Secret revealed! Use it to claim your Bitcoin.');
+      setSwapState('claimed');
+      
+    } catch (error) {
+      console.error('Error revealing secret:', error);
+      setStatus(`Error: ${error instanceof Error ? error.message : 'Failed to reveal secret'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const initiateSwap = async () => {
     if (!amount || !priceQuote) {
       setStatus('Please enter an amount');
