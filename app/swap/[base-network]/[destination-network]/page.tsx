@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { chains, ChainId } from "../../../types/chains";
 import { ethers } from 'ethers';
+import SwapStatusDashboard from '@/components/swap/SwapStatusDashboard';
 
 export default function SwapPage({
   params,
@@ -202,11 +203,11 @@ export default function SwapPage({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fromToken: '0x...', // TODO: Get actual token address
-          toToken: swapMethod === 'lightning' ? 'LN-BTC' : recipientAddress,
+          from_token: '0x...', // TODO: Get actual token address
+          to_token: swapMethod === 'lightning' ? 'LN-BTC' : recipientAddress,
           amount: ethers.parseUnits(amount, 18).toString(), // Assuming 18 decimals
-          userAddress,
-          swapType: swapMethod
+          user_address: userAddress,
+          swap_type: swapMethod
         })
       });
       
@@ -215,11 +216,11 @@ export default function SwapPage({
         throw new Error(data.error || 'Failed to execute swap');
       }
       
-      setHtlcHash(data.htlcHash);
+      setHtlcHash(data.htlc_hash || data.htlcHash); // Support both field names for backward compatibility
       setStatus('Swap initiated! Monitoring progress...');
       
       // Start polling for status
-      startStatusPolling(data.htlcHash);
+      startStatusPolling(data.htlc_hash || data.htlcHash);
       
     } catch (error) {
       console.error('Swap error:', error);
@@ -292,22 +293,14 @@ export default function SwapPage({
         </button>
       </form>
       
-      {status && (
+      {htlcHash && (swapState === 'polling' || swapState === 'processing') && (
+        <SwapStatusDashboard htlcHash={htlcHash} />
+      )}
+      
+      {status && swapState !== 'polling' && swapState !== 'processing' && (
         <div>
           <h3>Status</h3>
           <p>{status}</p>
-          {swapState === 'polling' && (
-            <div>
-              <p>⏳ Monitoring blockchain activity...</p>
-              <a 
-                href={`https://sepolia.etherscan.io/`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                View on Etherscan →
-              </a>
-            </div>
-          )}
         </div>
       )}
       
