@@ -36,31 +36,45 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // In a real implementation, we would:
-    // 1. Connect to LND node using ln-service
-    // 2. Create a HODL invoice with the htlcHash as the payment hash
-    // 3. Return the BOLT11 invoice string
+    // Connect to LND node
+    const { lnd } = await getLndConnection();
     
-    // For demo, create a simulated HODL invoice
-    const hodlInvoice = createSimulatedHODLInvoice(
-      htlcHash,
-      amountSats,
-      description,
-      expirySeconds
-    );
+    // Create HODL invoice with the provided hash
+    try {
+      const invoice = await createHodlInvoice({
+        lnd,
+        id: htlcHash.replace('0x', ''), // Remove 0x prefix
+        tokens: amountSats,
+        description,
+        expires_at: new Date(Date.now() + expirySeconds * 1000).toISOString()
+      });
+      
+      const hodlInvoice: HODLInvoice = {
+        paymentRequest: invoice.request,
+        paymentHash: htlcHash,
+        expiresAt: Math.floor(Date.now() / 1000) + expirySeconds,
+        amountSats
+      };
     
-    // Store invoice details (in production, this would be in a database)
-    // This allows the resolver to track and settle the invoice when the secret is revealed
-    
-    return NextResponse.json({
-      success: true,
-      invoice: hodlInvoice,
-      message: 'HODL invoice created successfully'
-    });
+      // Store invoice details (in production, this would be in a database)
+      // This allows the resolver to track and settle the invoice when the secret is revealed
+      
+      return NextResponse.json({
+        success: true,
+        invoice: hodlInvoice,
+        message: 'HODL invoice created successfully'
+      });
+    } catch (error: any) {
+      console.error('Error creating HODL invoice:', error);
+      return NextResponse.json(
+        { success: false, error: error.message || 'Failed to create HODL invoice' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('Error creating Lightning HODL invoice:', error);
+    console.error('Error in Lightning handler:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create HODL invoice' },
+      { success: false, error: 'Failed to process request' },
       { status: 500 }
     );
   }
