@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ChainId, ChainType, chains } from '../../types/chains';
-import { AssetId, getAssetAddress } from '../../types/assets';
+import { ChainId, ChainType, chains } from '@/types/chains';
+import { AssetId, getAssetAddress } from '@/types/assets';
 
 const ONEINCH_API_KEY = process.env.ONEINCH_API_KEY;
 const ONEINCH_API_URL = 'https://api.1inch.dev/price/v1.1';

@@ -1,5 +1,5 @@
 import "./globals.css";
-import Navigation from "./components/ui/Navigation";
+import Navigation from "@/components/ui/Navigation";
 import { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {

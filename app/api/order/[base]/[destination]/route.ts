@@ -1,4 +1,4 @@
-import { ChainId, chains } from "../../../../types/chains";
+import { ChainId, chains } from "@/types/chains";
 
 export async function POST(
   request: Request,

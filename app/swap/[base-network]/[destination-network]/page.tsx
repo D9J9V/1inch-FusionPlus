@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { chains, ChainId } from "../../../types/chains";
+import { chains, ChainId } from "@/types/chains";
 import { ethers } from "ethers";
 import SwapStatusDashboard from "@/components/swap/SwapStatusDashboard";
 import Button from "@/components/ui/Button";
