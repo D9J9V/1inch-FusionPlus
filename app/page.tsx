@@ -101,7 +101,7 @@ export default function Home() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-cyber-cyan font-mono">
           <div className="animate-spin w-8 h-8 border-2 border-cyber-cyan border-t-transparent rounded-full mx-auto mb-4" />
-          Initializing Navigation System...
+          Loading...
         </div>
       </div>
     );
@@ -109,13 +109,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section - Epic Space Vista */}
+      {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           {/* Large Polaris Star */}
           <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <span className="text-8xl opacity-35">✨</span>
+            <span className="text-8xl opacity-85">✨</span>
           </div>
 
           {/* Orbital Rings */}
@@ -167,19 +167,18 @@ export default function Home() {
             </h1>
 
             <div className="text-xl md:text-2xl font-space text-cyber-cyan/80 mb-4 uppercase tracking-widest">
-              Cross-Chain Navigation System
+              Cross-Chain Bridge Protocol
             </div>
 
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-              Navigate the blockchain universe with trustless atomic swaps
-              between
+              Trustless atomic swaps between
               <span className="text-cyber-orange font-semibold">
                 {" "}
                 Bitcoin/Lightning
               </span>{" "}
               and
               <span className="text-cyber-cyan font-semibold"> EVM chains</span>
-              . Your North Star for cross-chain DeFi.
+              . Secure cross-chain transfers without intermediaries.
             </p>
           </div>
 
@@ -192,7 +191,7 @@ export default function Home() {
               rightIcon={<ArrowRight className="w-5 h-5" />}
               className="min-w-[200px]"
             >
-              Launch Bridge
+              Start Swap
             </Button>
 
             <Button
@@ -201,7 +200,7 @@ export default function Home() {
               leftIcon={<Activity className="w-5 h-5" />}
               className="min-w-[200px]"
             >
-              Mission Control
+              Dashboard
             </Button>
           </div>
 
@@ -209,7 +208,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <Card variant="hologram" className="text-center">
               <CardContent className="p-6">
-                <div className="text-3xl font-bold text-cyber-cyan mb-2">∞</div>
+                <div className="text-3xl font-bold text-cyber-cyan mb-2">0</div>
                 <div className="text-sm font-space uppercase tracking-wider text-white/70">
                   Trustless Swaps
                 </div>
@@ -251,11 +250,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-              Navigation Routes
+              Supported Routes
             </h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Chart your course through the blockchain cosmos with our supported
-              swap routes
+              Available cross-chain swap routes with direct atomic swaps
             </p>
           </div>
 
@@ -304,7 +302,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-              System Capabilities
+              Key Features
             </h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
               Advanced technology powering the future of cross-chain
@@ -343,7 +341,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-              Mission Protocol
+              How It Works
             </h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
               The atomic swap sequence that ensures trustless cross-chain
@@ -416,11 +414,10 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-cyber-cyan/10 to-cyber-purple/10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-            Begin Your Journey
+            Ready to Start?
           </h2>
           <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
-            Join the future of decentralized finance. Navigate the blockchain
-            universe with confidence.
+            Experience secure cross-chain swaps with no intermediaries.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
