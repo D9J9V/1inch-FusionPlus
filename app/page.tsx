@@ -162,7 +162,7 @@ export default function Home() {
               <div className="relative"></div>
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-display font-bold mb-6 bg-gradient-to-r from-cyber-cyan via-cyber-purple to-cyber-cyan bg-clip-text text-transparent animate-hologram">
+            <h1 className="pt-20 text-6xl md:text-8xl font-display font-bold mb-6 bg-gradient-to-r from-cyber-cyan via-cyber-purple to-cyber-cyan bg-clip-text text-transparent animate-hologram">
               POLARIS
             </h1>
 
