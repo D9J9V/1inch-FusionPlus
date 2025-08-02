@@ -1,6 +1,6 @@
 import "./globals.css";
 import Navigation from "./components/ui/Navigation";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: "Polaris - Cross-Chain Navigation System",
@@ -15,7 +15,11 @@ export const metadata: Metadata = {
     "Ethereum",
   ],
   authors: [{ name: "Polaris Team" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
   themeColor: "#00D4FF",
 };
 
