@@ -20,6 +20,8 @@ export default function SwapPage({
   const [htlcHash, setHtlcHash] = useState('');
   const [invoice, setInvoice] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
+  const [swapState, setSwapState] = useState<'idle' | 'processing' | 'polling' | 'ready' | 'claimed'>('idle');
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     params.then(p => {
