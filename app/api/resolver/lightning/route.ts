@@ -134,29 +134,23 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function createSimulatedHODLInvoice(
-  htlcHash: string,
-  amountSats: number,
-  description: string,
-  expirySeconds: number
-): HODLInvoice {
-  // Remove '0x' prefix if present
-  const cleanHash = htlcHash.startsWith('0x') ? htlcHash.slice(2) : htlcHash;
+async function getLndConnection() {
+  if (!LND_CONFIG.cert || !LND_CONFIG.macaroon) {
+    throw new Error('Lightning node configuration missing. Please set LND_CERT and LND_MACAROON environment variables.');
+  }
   
-  // In production, this would use ln-service to create a real HODL invoice
-  // For demo, we create a placeholder that looks like a BOLT11 invoice
-  
-  const expiresAt = Math.floor(Date.now() / 1000) + expirySeconds;
-  
-  // Simulated BOLT11 invoice (not valid for real Lightning Network)
-  const paymentRequest = `lnbc${amountSats}n1p0${cleanHash.slice(0, 10)}...`;
-  
-  return {
-    paymentRequest,
-    paymentHash: htlcHash,
-    expiresAt,
-    amountSats
-  };
+  try {
+    const { lnd } = authenticatedLndGrpc({
+      cert: LND_CONFIG.cert,
+      macaroon: LND_CONFIG.macaroon,
+      socket: LND_CONFIG.socket
+    });
+    
+    return { lnd };
+  } catch (error) {
+    console.error('Failed to connect to LND:', error);
+    throw new Error('Failed to connect to Lightning node');
+  }
 }
 
 // Additional endpoint to settle HODL invoice when secret is revealed
