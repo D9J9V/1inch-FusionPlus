@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as bitcoin from 'bitcoinjs-lib';
 import { crypto } from 'bitcoinjs-lib';
+import { ECPairFactory } from 'ecpair';
+import * as ecc from 'tiny-secp256k1';
 
-// This would typically be environment variables
+const ECPair = ECPairFactory(ecc);
+
+// Network configuration
 const BITCOIN_NETWORK = process.env.BITCOIN_NETWORK === 'mainnet' 
   ? bitcoin.networks.bitcoin 
   : bitcoin.networks.testnet;
+
+const BITCOIN_RPC_URL = process.env.BITCOIN_RPC_URL || 'https://blockstream.info/testnet/api';
+const RESOLVER_BITCOIN_PRIVATE_KEY = process.env.BITCOIN_PRIVATE_KEY;
 
 interface HTLCRequest {
   htlcHash: string;
@@ -44,17 +51,83 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to generate P2SH address');
     }
     
-    // In a real implementation, this would:
-    // 1. Create and sign a Bitcoin transaction sending funds to the P2SH address
-    // 2. Broadcast the transaction to the Bitcoin network
-    // 3. Return the transaction ID
+    // Get resolver's Bitcoin key pair
+    if (!RESOLVER_BITCOIN_PRIVATE_KEY) {
+      throw new Error('Bitcoin private key not configured');
+    }
+    
+    const keyPair = ECPair.fromPrivateKey(
+      Buffer.from(RESOLVER_BITCOIN_PRIVATE_KEY.replace('0x', ''), 'hex'),
+      { network: BITCOIN_NETWORK }
+    );
+    
+    const resolverAddress = bitcoin.payments.p2wpkh({
+      pubkey: keyPair.publicKey,
+      network: BITCOIN_NETWORK
+    });
+    
+    // Fetch UTXOs for the resolver's address
+    const utxos = await fetchUTXOs(resolverAddress.address!);
+    
+    if (utxos.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'No UTXOs available. Please fund the resolver address: ' + resolverAddress.address
+      }, { status: 400 });
+    }
+    
+    // Build and sign transaction
+    const psbt = new bitcoin.Psbt({ network: BITCOIN_NETWORK });
+    
+    let totalInput = 0;
+    for (const utxo of utxos) {
+      psbt.addInput({
+        hash: utxo.txid,
+        index: utxo.vout,
+        witnessUtxo: {
+          script: resolverAddress.output!,
+          value: utxo.value
+        }
+      });
+      totalInput += utxo.value;
+      if (totalInput >= amount + 1000) break; // 1000 sats for fee
+    }
+    
+    // Add HTLC output
+    psbt.addOutput({
+      address: p2sh.address!,
+      value: amount
+    });
+    
+    // Add change output if needed
+    const fee = 1000; // Simple fixed fee
+    const change = totalInput - amount - fee;
+    if (change > 546) { // Dust limit
+      psbt.addOutput({
+        address: resolverAddress.address!,
+        value: change
+      });
+    }
+    
+    // Sign all inputs
+    for (let i = 0; i < psbt.inputCount; i++) {
+      psbt.signInput(i, keyPair);
+    }
+    
+    psbt.finalizeAllInputs();
+    const tx = psbt.extractTransaction();
+    const txHex = tx.toHex();
+    
+    // Broadcast transaction
+    const txId = await broadcastTransaction(txHex);
     
     return NextResponse.json({
       success: true,
       htlcAddress: p2sh.address,
       htlcScript: htlcScript.toString('hex'),
       amount: amount,
-      message: 'HTLC created (transaction broadcast not implemented in demo)'
+      txId: txId,
+      message: 'HTLC transaction broadcast successfully'
     });
   } catch (error) {
     console.error('Error creating Bitcoin HTLC:', error);
@@ -109,4 +182,17 @@ function createHTLCScript(
       opcodes.OP_CHECKSIG,
     opcodes.OP_ENDIF
   ]);
+}
+
+async function fetchUTXOs(address: string): Promise<any[]> {
+  try {
+    const response = await fetch(`${BITCOIN_RPC_URL}/address/${address}/utxo`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch UTXOs');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching UTXOs:', error);
+    return [];
+  }
 }
