@@ -1,24 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ethers } from 'ethers';
-
-// Import contract ABIs
-import EVMHtlcEscrowABI from '@/smart-contracts/out/EVMHtlcEscrow.sol/EVMHtlcEscrow.json';
-
-const HTLC_ESCROW_ADDRESS = process.env.HTLC_ESCROW_ADDRESS || '';
-const RPC_URL = process.env.EVM_RPC_URL || '';
-
-interface SwapStatus {
-  htlcHash: string;
-  status: 'pending' | 'ready_to_claim' | 'claimed' | 'refunded' | 'expired';
-  evmStatus: any;
-  bitcoinStatus: any;
-  swapDetails?: any;
-}
+import { createClient } from '@/utils/supabase/server';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { htlcHash: string } }
 ) {
+  const supabase = createClient();
+  
   try {
     const { htlcHash } = params;
 
@@ -29,110 +17,104 @@ export async function GET(
       );
     }
 
-    // Initialize ethers provider
-    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    // Fetch swap from database
+    const { data: swap, error: fetchError } = await supabase
+      .from('swaps')
+      .select('*')
+      .eq('htlc_hash', htlcHash)
+      .single();
 
-    // Initialize EVMHtlcEscrow contract
-    const htlcEscrow = new ethers.Contract(
-      HTLC_ESCROW_ADDRESS,
-      EVMHtlcEscrowABI.abi,
-      provider
-    );
+    if (fetchError || !swap) {
+      return NextResponse.json(
+        { success: false, error: 'Swap not found' },
+        { status: 404 }
+      );
+    }
 
-    // Check on-chain swap status
-    const swap = await htlcEscrow.swaps(htlcHash);
+    // Determine user-friendly status
+    let status = 'unknown';
+    let message = '';
     
-    // In production, also fetch swap details from database
-    // const swapDetails = await getSwapFromDatabase(htlcHash);
+    switch (swap.state) {
+      case 'created':
+        status = 'pending';
+        message = 'Swap created, waiting for deposit';
+        break;
+      case 'waiting_for_deposit':
+        status = 'pending';
+        message = 'Waiting for EVM deposit';
+        break;
+      case 'evm_deposit_detected':
+      case 'evm_deposit_confirmed':
+        status = 'processing';
+        message = 'EVM deposit confirmed, creating Bitcoin HTLC';
+        break;
+      case 'btc_htlc_created':
+        status = 'processing';
+        message = 'Bitcoin HTLC created, waiting for Bitcoin deposit';
+        break;
+      case 'btc_deposit_detected':
+        status = 'processing';
+        message = `Bitcoin deposit detected (${swap.current_confirmations}/${swap.confirmations_required} confirmations)`;
+        break;
+      case 'btc_deposit_confirmed':
+      case 'secret_requested':
+        status = 'ready_to_claim';
+        message = 'Bitcoin deposit confirmed! You can now reveal the secret to claim your funds.';
+        break;
+      case 'secret_revealed':
+        status = 'claiming';
+        message = 'Secret revealed, claim your funds on the Bitcoin network';
+        break;
+      case 'swap_completed':
+        status = 'completed';
+        message = 'Swap completed successfully';
+        break;
+      case 'swap_failed':
+        status = 'failed';
+        message = swap.error_message || 'Swap failed';
+        break;
+      case 'swap_timeout':
+        status = 'expired';
+        message = 'Swap expired';
+        break;
+      case 'swap_reclaimed':
+        status = 'reclaimed';
+        message = 'Funds reclaimed due to timeout';
+        break;
+    }
 
-    let status: SwapStatus['status'] = 'pending';
-    let evmStatus = {
-      exists: swap.amount > 0n,
-      amount: swap.amount.toString(),
-      token: swap.token,
-      recipient: swap.recipient,
-      timeout: swap.timeout.toString(),
-      isExpired: false,
-      isClaimed: false
-    };
-
-    if (swap.amount === 0n) {
-      // Swap doesn't exist or has been claimed/refunded
-      status = 'claimed'; // In production, check logs to determine if claimed or refunded
-      evmStatus.isClaimed = true;
-    } else if (swap.timeout < Math.floor(Date.now() / 1000)) {
+    // Check if expired
+    if (new Date(swap.expires_at) < new Date() && status !== 'completed') {
       status = 'expired';
-      evmStatus.isExpired = true;
+      message = 'Swap has expired';
     }
-
-    // Check Bitcoin/Lightning status
-    // In production, this would check actual Bitcoin/Lightning network status
-    const bitcoinStatus = await checkBitcoinStatus(htlcHash);
-
-    // Determine overall status
-    if (evmStatus.exists && bitcoinStatus.confirmed) {
-      status = 'ready_to_claim';
-    }
-
-    // Mock swap details (in production, fetch from database)
-    const swapDetails = {
-      swapType: 'native', // or 'lightning'
-      fromToken: swap.token,
-      toToken: 'BTC',
-      amount: swap.amount.toString(),
-      userAddress: swap.recipient,
-      createdAt: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
-      invoice: bitcoinStatus.invoice
-    };
 
     return NextResponse.json({
       success: true,
-      htlcHash,
+      htlc_hash: htlcHash,
       status,
-      evmStatus,
-      bitcoinStatus,
-      swapDetails
+      message,
+      state: swap.state,
+      swap_type: swap.swap_type,
+      from_chain: swap.from_chain,
+      to_chain: swap.to_chain,
+      amount: swap.amount,
+      evm_tx_hash: swap.evm_tx_hash,
+      btc_tx_id: swap.btc_tx_id,
+      lightning_invoice: swap.lightning_invoice,
+      created_at: swap.created_at,
+      expires_at: swap.expires_at,
+      secret_revealed: !!swap.secret_revealed_at,
+      current_confirmations: swap.current_confirmations,
+      required_confirmations: swap.confirmations_required
     });
 
   } catch (error) {
-    console.error('Error checking swap status:', error);
+    console.error('Error fetching swap status:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to check swap status' },
+      { success: false, error: 'Failed to fetch swap status' },
       { status: 500 }
     );
   }
-}
-
-async function checkBitcoinStatus(htlcHash: string) {
-  // In production, this would check actual Bitcoin/Lightning status
-  // For now, return mock data
-  
-  // Check Lightning invoice status
-  try {
-    const lightningResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/resolver/lightning?paymentHash=${htlcHash}`
-    );
-    
-    if (lightningResponse.ok) {
-      const data = await lightningResponse.json();
-      if (data.status === 'settled') {
-        return {
-          confirmed: true,
-          type: 'lightning',
-          invoice: data.paymentRequest,
-          settledAt: data.settledAt
-        };
-      }
-    }
-  } catch (error) {
-    console.error('Error checking Lightning status:', error);
-  }
-
-  // For native Bitcoin, in production would check blockchain
-  return {
-    confirmed: false,
-    type: 'unknown',
-    invoice: null,
-    txId: null
-  };
 }
