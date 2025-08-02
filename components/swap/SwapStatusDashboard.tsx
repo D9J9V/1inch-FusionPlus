@@ -22,7 +22,7 @@ import {
 import { formatEther } from "ethers";
 import { Card, CardContent, CardHeader } from "../ui/Card";
 import Button from "../ui/Button";
-import { cn } from "@/utils/cn";
+import { cn } from "../../utils/cn";
 
 interface SwapStatusDashboardProps {
   htlcHash: string;
