@@ -140,4 +140,13 @@ contract EVMHtlcEscrowTest is Test {
         
         vm.stopPrank();
     }
+    
+    function testCalculateFee() public {
+        // Test fee calculation
+        uint256 amount = 1000 * 10**18;
+        uint256 expectedFee = (amount * 30) / 10000; // 0.3%
+        
+        assertEq(escrow.calculateFee(amount), expectedFee);
+        assertEq(escrow.calculateFee(amount), 3 * 10**18); // 3 tokens for 1000 tokens
+    }
 }
