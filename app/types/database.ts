@@ -40,7 +40,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      swap_events: {
+        Row: {
+          created_at: string | null
+          details: Json | null
+          event_type: string
+          from_state: string | null
+          htlc_hash: string
+          id: string
+          swap_id: string
+          to_state: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json | null
+          event_type: string
+          from_state?: string | null
+          htlc_hash: string
+          id?: string
+          swap_id: string
+          to_state?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json | null
+          event_type?: string
+          from_state?: string | null
+          htlc_hash?: string
+          id?: string
+          swap_id?: string
+          to_state?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "swap_events_swap_id_fkey"
+            columns: ["swap_id"]
+            isOneToOne: false
+            referencedRelation: "swaps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      swaps: {
+        Row: {
+          amount: string
+          btc_amount: number | null
+          btc_block_height: number | null
+          btc_htlc_address: string | null
+          btc_htlc_script: string | null
+          btc_tx_id: string | null
+          claim_tx_hash: string | null
+          confirmations_required: number | null
+          created_at: string | null
+          current_confirmations: number | null
+          error_details: Json | null
+          error_message: string | null
+          evm_block_number: number | null
+          evm_chain_id: number | null
+          evm_escrow_address: string | null
+          evm_tx_hash: string | null
+          expires_at: string
+          from_chain: string
+          from_token: string
+          htlc_hash: string
+          id: string
+          lightning_invoice: string | null
+          lightning_payment_hash: string | null
+          lightning_preimage: string | null
+          secret: string
+          secret_hash: string
+          secret_revealed_at: string | null
+          secret_revealed_to: string | null
+          state: string
+          swap_type: string
+          timeout_block: number | null
+          timeout_timestamp: string | null
+          to_chain: string
+          to_token: string
+          updated_at: string | null
+          user_address: string
+        }
+        Insert: {
+          amount: string
+          btc_amount?: number | null
+          btc_block_height?: number | null
+          btc_htlc_address?: string | null
+          btc_htlc_script?: string | null
+          btc_tx_id?: string | null
+          claim_tx_hash?: string | null
+          confirmations_required?: number | null
+          created_at?: string | null
+          current_confirmations?: number | null
+          error_details?: Json | null
+          error_message?: string | null
+          evm_block_number?: number | null
+          evm_chain_id?: number | null
+          evm_escrow_address?: string | null
+          evm_tx_hash?: string | null
+          expires_at: string
+          from_chain: string
+          from_token: string
+          htlc_hash: string
+          id?: string
+          lightning_invoice?: string | null
+          lightning_payment_hash?: string | null
+          lightning_preimage?: string | null
+          secret: string
+          secret_hash: string
+          secret_revealed_at?: string | null
+          secret_revealed_to?: string | null
+          state?: string
+          swap_type: string
+          timeout_block?: number | null
+          timeout_timestamp?: string | null
+          to_chain: string
+          to_token: string
+          updated_at?: string | null
+          user_address: string
+        }
+        Update: {
+          amount?: string
+          btc_amount?: number | null
+          btc_block_height?: number | null
+          btc_htlc_address?: string | null
+          btc_htlc_script?: string | null
+          btc_tx_id?: string | null
+          claim_tx_hash?: string | null
+          confirmations_required?: number | null
+          created_at?: string | null
+          current_confirmations?: number | null
+          error_details?: Json | null
+          error_message?: string | null
+          evm_block_number?: number | null
+          evm_chain_id?: number | null
+          evm_escrow_address?: string | null
+          evm_tx_hash?: string | null
+          expires_at?: string
+          from_chain?: string
+          from_token?: string
+          htlc_hash?: string
+          id?: string
+          lightning_invoice?: string | null
+          lightning_payment_hash?: string | null
+          lightning_preimage?: string | null
+          secret?: string
+          secret_hash?: string
+          secret_revealed_at?: string | null
+          secret_revealed_to?: string | null
+          state?: string
+          swap_type?: string
+          timeout_block?: number | null
+          timeout_timestamp?: string | null
+          to_chain?: string
+          to_token?: string
+          updated_at?: string | null
+          user_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
