@@ -184,17 +184,30 @@ export async function PUT(request: NextRequest) {
       );
     }
     
-    // In production, this would:
-    // 1. Use ln-service to settle the HODL invoice
-    // 2. Update the invoice status in the database
+    // Connect to LND node
+    const { lnd } = await getLndConnection();
     
-    return NextResponse.json({
-      success: true,
-      message: 'HODL invoice settled',
-      paymentHash,
-      preimage,
-      settledAt: new Date().toISOString()
-    });
+    try {
+      // Settle the HODL invoice with the preimage
+      await settleHodlInvoice({
+        lnd,
+        secret: preimage.replace('0x', '')
+      });
+      
+      return NextResponse.json({
+        success: true,
+        message: 'HODL invoice settled',
+        paymentHash,
+        preimage,
+        settledAt: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Error settling HODL invoice:', error);
+      return NextResponse.json(
+        { success: false, error: error.message || 'Failed to settle invoice' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error settling HODL invoice:', error);
     return NextResponse.json(
