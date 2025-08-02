@@ -10,26 +10,26 @@ const LND_CONFIG = {
 };
 
 interface LightningHTLCRequest {
-  htlcHash: string;
-  amountSats: number;
+  htlc_hash: string;
+  amount_sats: number;
   description?: string;
-  expirySeconds?: number;
+  expiry_seconds?: number;
 }
 
 interface HODLInvoice {
-  paymentRequest: string;
-  paymentHash: string;
-  expiresAt: number;
-  amountSats: number;
+  payment_request: string;
+  payment_hash: string;
+  expires_at: number;
+  amount_sats: number;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: LightningHTLCRequest = await request.json();
-    const { htlcHash, amountSats, description = 'Cross-chain swap', expirySeconds = 3600 } = body;
+    const { htlc_hash, amount_sats, description = 'Cross-chain swap', expiry_seconds = 3600 } = body;
     
     // Validate inputs
-    if (!htlcHash || !amountSats) {
+    if (!htlc_hash || !amount_sats) {
       return NextResponse.json(
         { success: false, error: 'Missing required parameters' },
         { status: 400 }
@@ -43,17 +43,17 @@ export async function POST(request: NextRequest) {
     try {
       const invoice = await createHodlInvoice({
         lnd,
-        id: htlcHash.replace('0x', ''), // Remove 0x prefix
-        tokens: amountSats,
+        id: htlc_hash.replace('0x', ''), // Remove 0x prefix
+        tokens: amount_sats,
         description,
-        expires_at: new Date(Date.now() + expirySeconds * 1000).toISOString()
+        expires_at: new Date(Date.now() + expiry_seconds * 1000).toISOString()
       });
       
       const hodlInvoice: HODLInvoice = {
-        paymentRequest: invoice.request,
-        paymentHash: htlcHash,
-        expiresAt: Math.floor(Date.now() / 1000) + expirySeconds,
-        amountSats
+        payment_request: invoice.request,
+        payment_hash: htlc_hash,
+        expires_at: Math.floor(Date.now() / 1000) + expiry_seconds,
+        amount_sats
       };
     
       // Store invoice details (in production, this would be in a database)
