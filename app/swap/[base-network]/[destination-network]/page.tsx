@@ -249,24 +249,57 @@ export default function SwapPage({
         <div>
           <h3>Status</h3>
           <p>{status}</p>
+          {swapState === 'polling' && (
+            <div>
+              <p>⏳ Monitoring blockchain activity...</p>
+              <a 
+                href={`https://sepolia.etherscan.io/`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                View on Etherscan →
+              </a>
+            </div>
+          )}
         </div>
       )}
       
-      {secret && (
-        <div>
-          <h3>Swap Details</h3>
-          <p><strong>Secret (Keep this safe!):</strong></p>
-          <code>{secret}</code>
-          <p><strong>HTLC Hash:</strong></p>
-          <code>{htlcHash}</code>
+      {swapState === 'ready' && (
+        <div style={{ border: '2px solid green', padding: '20px', margin: '20px 0' }}>
+          <h3>✅ Ready to Claim!</h3>
+          <p>Your Bitcoin payment has been confirmed. You can now claim your funds.</p>
+          
+          {swapMethod === 'lightning' && invoice && (
+            <div>
+              <h4>Lightning Invoice (QR Code):</h4>
+              <code style={{ wordBreak: 'break-all' }}>{invoice}</code>
+              <p>Pay this invoice with your Lightning wallet to receive your BTC.</p>
+              <button onClick={() => navigator.clipboard.writeText(invoice)}>
+                Copy Invoice
+              </button>
+            </div>
+          )}
+          
+          {swapMethod === 'native' && (
+            <div>
+              <button onClick={claimWithSecret}>
+                Reveal Secret & Claim
+              </button>
+              <p>Click to get the secret needed to claim your Bitcoin.</p>
+            </div>
+          )}
         </div>
       )}
       
-      {invoice && (
-        <div>
-          <h3>Lightning Invoice</h3>
-          <code>{invoice}</code>
-          <p>Pay this invoice with your Lightning wallet to complete the swap.</p>
+      {secret && swapMethod === 'native' && (
+        <div style={{ border: '2px solid blue', padding: '20px', margin: '20px 0' }}>
+          <h3>🔐 Your Secret</h3>
+          <p>Use this secret to claim your Bitcoin:</p>
+          <code style={{ wordBreak: 'break-all' }}>{secret}</code>
+          <button onClick={() => navigator.clipboard.writeText(secret)}>
+            Copy Secret
+          </button>
+          <p>Instructions: Use this secret as the preimage in your Bitcoin wallet to unlock the HTLC.</p>
         </div>
       )}
       
