@@ -54,12 +54,19 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Get resolver's Bitcoin key pair
+    const { keyPair, pubKeyHash } = getResolverKeyPair();
+    
+    if (!keyPair || !pubKeyHash) {
+      throw new Error('Bitcoin private key not configured');
+    }
+    
     // Create the HTLC script
     const htlcScript = createHTLCScript(
       Buffer.from(htlc_hash.slice(2), 'hex'), // Remove '0x' prefix
       recipient_address,
       timeout_blocks,
-      pubKeyHash! // Pass resolver's pubkey hash
+      pubKeyHash // Pass resolver's pubkey hash
     );
     
     // Create P2SH address from the script
@@ -70,13 +77,6 @@ export async function POST(request: NextRequest) {
     
     if (!p2sh.address) {
       throw new Error('Failed to generate P2SH address');
-    }
-    
-    // Get resolver's Bitcoin key pair
-    const { keyPair, pubKeyHash } = getResolverKeyPair();
-    
-    if (!keyPair || !pubKeyHash) {
-      throw new Error('Bitcoin private key not configured');
     }
     
     const resolverAddress = bitcoin.payments.p2wpkh({

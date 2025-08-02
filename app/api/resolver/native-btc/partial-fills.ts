@@ -1,5 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib';
 import { crypto } from 'bitcoinjs-lib';
+import { randomBytes } from 'crypto';
 
 const BITCOIN_NETWORK = process.env.BITCOIN_NETWORK === 'mainnet' 
   ? bitcoin.networks.bitcoin 
@@ -181,7 +182,7 @@ export function generatePartialFillSecrets(count: number): Array<{ secret: Buffe
   const secrets = [];
   
   for (let i = 0; i < count; i++) {
-    const secret = crypto.randomBytes(32);
+    const secret = randomBytes(32);
     const hash = crypto.sha256(secret);
     secrets.push({ secret, hash });
   }

@@ -191,9 +191,11 @@ export async function reclaimHTLC(
       script: fundingTx.outs[htlcStatus.vout].script,
       value: htlcStatus.amount!
     },
-    redeemScript: htlcScript,
-    locktime: currentBlockHeight // Set locktime for CLTV
+    redeemScript: htlcScript
   });
+  
+  // Set locktime on the PSBT for CLTV
+  psbt.locktime = currentBlockHeight;
   
   // Calculate fee and add output
   const fee = 300 * 10; // 300 bytes * 10 sats/byte
