@@ -72,8 +72,13 @@ contract EVMHtlcEscrowTest is Test {
         escrow.claim(secret);
         uint256 balanceAfter = token.balanceOf(resolver);
         
-        // Check tokens were transferred to resolver
-        assertEq(balanceAfter - balanceBefore, 100 * 10**18);
+        // Check tokens were transferred to resolver (minus 0.3% fee)
+        uint256 expectedAmount = 100 * 10**18;
+        uint256 expectedFee = (expectedAmount * 30) / 10000; // 0.3%
+        assertEq(balanceAfter - balanceBefore, expectedAmount - expectedFee);
+        
+        // Check treasury received the fee
+        assertEq(token.balanceOf(treasury), expectedFee);
         
         // Check swap was deleted
         (,,,uint256 amount,) = escrow.swaps(htlcHash);
