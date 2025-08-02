@@ -115,7 +115,7 @@ export default function Home() {
         <div className="absolute inset-0">
           {/* Large Polaris Star */}
           <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <Star className="w-32 h-32 text-cyber-cyan animate-pulse-glow opacity-20" />
+            <span className="text-8xl opacity-35">✨</span>
           </div>
 
           {/* Orbital Rings */}
@@ -159,15 +159,7 @@ export default function Home() {
           {/* Main Title */}
           <div className="mb-8">
             <div className="flex items-center justify-center mb-6">
-              <div className="relative">
-                <Star className="w-16 h-16 text-cyber-cyan animate-pulse-glow" />
-                <div
-                  className="absolute inset-0 animate-spin"
-                  style={{ animationDuration: "10s" }}
-                >
-                  <Orbit className="w-16 h-16 text-cyber-purple/50" />
-                </div>
-              </div>
+              <div className="relative"></div>
             </div>
 
             <h1 className="text-6xl md:text-8xl font-display font-bold mb-6 bg-gradient-to-r from-cyber-cyan via-cyber-purple to-cyber-cyan bg-clip-text text-transparent animate-hologram">
