@@ -148,14 +148,6 @@ bitcoin-cli -testnet getnewaddress "" "legacy"
 bitcoin-cli -testnet dumpprivkey "YOUR_ADDRESS_HERE"
 ```
 
-Alternative quick method:
-```bash
-# Using Node.js
-npm install -g coinkey
-coinkey --testnet
-# This outputs both address and private key
-```
-
 ### 3. Lightning Network Setup with Polar
 Polar provides a local Lightning Network environment:
 
