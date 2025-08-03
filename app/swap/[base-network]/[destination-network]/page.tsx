@@ -367,6 +367,7 @@ export default function SwapPage({
   const getAvailableAssets = (chainId: ChainId) => {
     return Object.entries(assets)
       .filter(([assetId]) => isAssetAvailable(assetId as AssetId, chainId))
+      .filter(([assetId]) => assetId !== AssetId.WBTC) // Hide WBTC from dropdown
       .map(([assetId, asset]) => ({
         value: assetId,
         label: asset.symbol,
