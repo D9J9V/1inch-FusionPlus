@@ -29,7 +29,7 @@ const AsciiNetworkDiagram: React.FC<AsciiNetworkDiagramProps> = ({
 ║                                                                             ║
 ║                    CROSS-CHAIN ATOMIC SWAP ARCHITECTURE                     ║
 ║                                                                             ║
-║              ${sparkles[sparkleFrame][1]}          ${sparkles[sparkleFrame][2]}          ${sparkles[sparkleFrame][3]}                      ║
+║                   ${sparkles[sparkleFrame][1]}          ${sparkles[sparkleFrame][2]}          ${sparkles[sparkleFrame][3]}                      ║
 ║                                                                             ║
 ║         ┌──────────────┐                       ┌──────────────┐             ║
 ║         │      █       │                       │       █╗     │             ║
