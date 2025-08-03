@@ -59,6 +59,7 @@ export default function SwapPage({
   );
   const [feeAmount, setFeeAmount] = useState<number>(0);
   const [selectedAsset, setSelectedAsset] = useState<AssetId>(AssetId.ETH);
+  const [destinationAsset, setDestinationAsset] = useState<AssetId>(AssetId.ETH);
 
   useEffect(() => {
     params.then((p) => {
@@ -80,7 +81,7 @@ export default function SwapPage({
     if (amount && baseNetwork && destinationNetwork) {
       fetchPriceQuote();
     }
-  }, [amount, selectedAsset, baseNetwork, destinationNetwork]);
+  }, [amount, selectedAsset, destinationAsset, baseNetwork, destinationNetwork]);
 
   if (
     !baseNetwork ||
@@ -193,6 +194,8 @@ export default function SwapPage({
       let toAssetKey = "ETH";
       if (destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC) {
         toAssetKey = "BTC";
+      } else if (isDestinationNetworkEVM) {
+        toAssetKey = destinationAsset === AssetId.USDC ? "USDC" : "ETH";
       }
 
       const fromRate = mockRates[fromAssetKey] || 1;
@@ -362,6 +365,9 @@ export default function SwapPage({
 
   // Check if base network is EVM
   const isBaseNetworkEVM = baseNetwork && chains[baseNetwork].type === ChainType.EVM;
+  
+  // Check if destination network is EVM
+  const isDestinationNetworkEVM = destinationNetwork && chains[destinationNetwork].type === ChainType.EVM;
 
   // Handle swapping networks
   const handleSwapNetworks = () => {
@@ -520,6 +526,22 @@ export default function SwapPage({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Asset Selection for EVM Networks */}
+                {isDestinationNetworkEVM && (
+                  <div>
+                    <label className="block text-sm font-space font-medium text-cyber-cyan mb-2 uppercase tracking-wider">
+                      Select Asset
+                    </label>
+                    <Select
+                      value={destinationAsset}
+                      onChange={(value) => setDestinationAsset(value as AssetId)}
+                      options={getAvailableAssets(destinationNetwork)}
+                      variant="terminal"
+                      className="w-full"
+                    />
+                  </div>
+                )}
+
                 {/* Transfer Protocol for Bitcoin destinations */}
                 {isBitcoinDestination && (
                   <div>
@@ -574,9 +596,11 @@ export default function SwapPage({
                       : "0.00000000"}
                   </div>
                   <div className="text-sm text-white/60">
-                    {destinationNetwork === ChainId.LIGHTNING
+                    {destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC
                       ? "BTC"
-                      : "tokens"}
+                      : isDestinationNetworkEVM
+                        ? destinationAsset
+                        : "tokens"}
                   </div>
                 </div>
 
