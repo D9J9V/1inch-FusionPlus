@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { chains, ChainId } from "@/types/chains";
+import { chains, ChainId, ChainType } from "@/types/chains";
+import { assets, AssetId, isAssetAvailable } from "@/types/assets";
 import { ethers } from "ethers";
 import { useRouter } from "next/navigation";
 import SwapStatusDashboard from "@/components/swap/SwapStatusDashboard";
@@ -57,6 +58,7 @@ export default function SwapPage({
     null,
   );
   const [feeAmount, setFeeAmount] = useState<number>(0);
+  const [selectedAsset, setSelectedAsset] = useState<AssetId>(AssetId.ETH);
 
   useEffect(() => {
     params.then((p) => {
@@ -75,10 +77,10 @@ export default function SwapPage({
   }, [pollingInterval]);
 
   useEffect(() => {
-    if (amount) {
+    if (amount && baseNetwork && destinationNetwork) {
       fetchPriceQuote();
     }
-  }, [amount]);
+  }, [amount, selectedAsset, baseNetwork, destinationNetwork]);
 
   if (
     !baseNetwork ||
@@ -181,11 +183,22 @@ export default function SwapPage({
         USDC: 1,
       };
 
-      const fromRate =
-        mockRates[baseNetwork === ChainId.LIGHTNING ? "BTC" : "ETH"] || 1;
-      const toRate =
-        mockRates[destinationNetwork === ChainId.LIGHTNING ? "BTC" : "ETH"] ||
-        1;
+      // Determine the from asset based on network and selection
+      let fromAssetKey = "ETH";
+      if (baseNetwork === ChainId.LIGHTNING || baseNetwork === ChainId.BTC) {
+        fromAssetKey = "BTC";
+      } else if (isBaseNetworkEVM) {
+        fromAssetKey = selectedAsset === AssetId.USDC ? "USDC" : "ETH";
+      }
+
+      // Determine the to asset based on destination network
+      let toAssetKey = "ETH";
+      if (destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC) {
+        toAssetKey = "BTC";
+      }
+
+      const fromRate = mockRates[fromAssetKey] || 1;
+      const toRate = mockRates[toAssetKey] || 1;
 
       const quote = parseFloat(amount) * (fromRate / toRate);
       setPriceQuote(quote);
@@ -256,14 +269,20 @@ export default function SwapPage({
       // Get user's address (in production, this would come from wallet connection)
       const userAddress = "0x..."; // TODO: Connect wallet
 
+      // Get the from token address
+      const fromAssetId = isBaseNetworkEVM ? selectedAsset : AssetId.BTC;
+      const fromAsset = assets[fromAssetId];
+      const fromTokenAddress = fromAsset.addresses[baseNetwork] || "0x...";
+      const decimals = fromAsset.decimals;
+
       // Call the unified execute-swap endpoint
       const response = await fetch("/api/execute-swap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          from_token: "0x...", // TODO: Get actual token address
+          from_token: fromTokenAddress,
           to_token: swapMethod === "lightning" ? "LN-BTC" : recipientAddress,
-          amount: ethers.parseUnits(amount, 18).toString(), // Assuming 18 decimals
+          amount: ethers.parseUnits(amount, decimals).toString(),
           user_address: userAddress,
           swap_type: swapMethod,
         }),
@@ -332,6 +351,20 @@ export default function SwapPage({
     }
   };
 
+  // Get available assets for the base network
+  const getAvailableAssets = (chainId: ChainId) => {
+    return Object.entries(assets)
+      .filter(([assetId]) => isAssetAvailable(assetId as AssetId, chainId))
+      .map(([assetId, asset]) => ({
+        value: assetId,
+        label: asset.symbol,
+        icon: null, // You can add asset icons here if needed
+      }));
+  };
+
+  // Check if base network is EVM
+  const isBaseNetworkEVM = baseNetwork && chains[baseNetwork].type === ChainType.EVM;
+
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -355,6 +388,22 @@ export default function SwapPage({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Asset Selection for EVM Networks */}
+                {isBaseNetworkEVM && (
+                  <div>
+                    <label className="block text-sm font-space font-medium text-cyber-cyan mb-2 uppercase tracking-wider">
+                      Select Asset
+                    </label>
+                    <Select
+                      value={selectedAsset}
+                      onChange={(value) => setSelectedAsset(value as AssetId)}
+                      options={getAvailableAssets(baseNetwork)}
+                      variant="terminal"
+                      className="w-full"
+                    />
+                  </div>
+                )}
+
                 <Input
                   variant="terminal"
                   label="Amount"
