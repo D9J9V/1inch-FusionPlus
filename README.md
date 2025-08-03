@@ -94,6 +94,17 @@ This project extensively leverages 1inch technologies to enable trustless cross-
   - Compatible with 1inch's gasless execution model
   - 0.3% protocol fee structure for resolver incentives
 
+- **Partial Fills with Merkle Trees**: [`smart-contracts/src/PartialFillHTLC.sol`](smart-contracts/src/PartialFillHTLC.sol)
+  - Extends Fusion+ architecture to support partial order fills
+  - Uses Merkle trees for gas-efficient verification of multiple partial claims
+  - Enables large orders to be filled incrementally while maintaining atomic guarantees
+  - Key features:
+    - Merkle root contains all valid secret-amount pairs for a swap
+    - Each partial fill verifies against the Merkle tree
+    - Supports batch claiming of multiple partials in one transaction
+    - Minimum fill amounts prevent dust attacks
+    - Unused portions can be refunded after timeout
+
 ### Key Integration Points
 1. **Price Discovery**: 1inch API provides accurate cross-chain pricing
 2. **Architecture Pattern**: Fusion+ intent-based design extended to Bitcoin
