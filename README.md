@@ -77,7 +77,7 @@ This project extensively leverages 1inch technologies to enable trustless cross-
 
 ### 1inch Fusion+ Architecture Implementation
 
-#### Deployed Contracts on Unichain Sepolia
+#### Deployed and verified Contracts on Unichain Sepolia
 - **EVMHtlcEscrow**: [`0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8`](https://sepolia.uniscan.xyz/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8)
 - **BitcoinResolver**: [`0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078`](https://sepolia.uniscan.xyz/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078)
 
@@ -113,7 +113,6 @@ This project extensively leverages 1inch technologies to enable trustless cross-
 3. **Gasless UX**: Users don't pay gas fees, matching 1inch's user experience
 4. **Professional Resolvers**: Market-driven execution similar to 1inch network
 
-For the complete technical implementation details and prize application, see [PROJECT_SUBMISSION.md](PROJECT_SUBMISSION.md#1inch-prize-application)
 
 ## Developer Setup
 
@@ -275,6 +274,4 @@ To verify contracts on Unichain Sepolia using Blockscout (no API key required):
      --constructor-args $(cast abi-encode "constructor(address,address)" "0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8" "0x8e9284617b312Cda3EEc11ccA2e3d41B1130009b")
    ```
 
-3. **View Verified Contracts**
-   - EVMHtlcEscrow: https://unichain-sepolia.blockscout.com/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8
-   - BitcoinResolver: https://unichain-sepolia.blockscout.com/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078
+
