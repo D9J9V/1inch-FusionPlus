@@ -14,6 +14,7 @@ export enum AssetId {
   BTC = "BTC",
   ETH = "ETH",
   USDC = "USDC",
+  WBTC = "WBTC",
 }
 
 // Native token address placeholder
@@ -28,7 +29,7 @@ export const assets: Record<AssetId, Asset> = {
     addresses: {
       [ChainId.BTC]: NATIVE_TOKEN,
       [ChainId.LIGHTNING]: NATIVE_TOKEN,
-    }
+    },
   },
   [AssetId.ETH]: {
     ticker: "ETH",
@@ -37,7 +38,7 @@ export const assets: Record<AssetId, Asset> = {
     decimals: 18,
     addresses: {
       [ChainId.UNICHAIN]: NATIVE_TOKEN,
-    }
+    },
   },
   [AssetId.USDC]: {
     ticker: "USDC",
@@ -45,13 +46,25 @@ export const assets: Record<AssetId, Asset> = {
     name: "USD Coin",
     decimals: 6,
     addresses: {
-      [ChainId.UNICHAIN]: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4", // Placeholder USDC address on Unichain
-    }
-  }
+      [ChainId.UNICHAIN]: "0x078d782b760474a361dda0af3839290b0ef57ad6",
+    },
+  },
+  [AssetId.WBTC]: {
+    ticker: "WBTC",
+    symbol: "WBTC",
+    name: "Wrapped Bitcoin",
+    decimals: 8,
+    addresses: {
+      [ChainId.UNICHAIN]: "0x0555e30da8f98308edb960aa94c0db47230d2b9c",
+    },
+  },
 };
 
 // Helper function to get asset address on a specific chain
-export function getAssetAddress(assetId: AssetId, chainId: ChainId): string | undefined {
+export function getAssetAddress(
+  assetId: AssetId,
+  chainId: ChainId,
+): string | undefined {
   return assets[assetId].addresses[chainId];
 }
 

@@ -44,7 +44,12 @@ export default function SwapPage({
   const [swapMethod, setSwapMethod] = useState<"native" | "lightning">(
     "lightning",
   );
-  const [priceQuote, setPriceQuote] = useState<number | null>(null);
+  const [priceQuote, setPriceQuote] = useState<{
+    outputAmount: number;
+    fromPriceUSD: number;
+    toPriceUSD: number;
+    exchangeRate: number;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
   const [secret, setSecret] = useState("");
@@ -175,37 +180,43 @@ export default function SwapPage({
 
     setLoading(true);
     try {
-      // Mock price calculation for demo
-      const mockRates: Record<string, number> = {
-        ETH: 3800,
-        BTC: 65000,
-        USDC: 1,
-      };
+      // Determine the from asset
+      const fromAssetId = baseNetwork === ChainId.LIGHTNING || baseNetwork === ChainId.BTC
+        ? AssetId.BTC
+        : selectedAsset;
 
-      // Determine the from asset based on network and selection
-      let fromAssetKey = "ETH";
-      if (baseNetwork === ChainId.LIGHTNING || baseNetwork === ChainId.BTC) {
-        fromAssetKey = "BTC";
-      } else if (isBaseNetworkEVM) {
-        fromAssetKey = selectedAsset === AssetId.USDC ? "USDC" : "ETH";
+      // Determine the to asset
+      const toAssetId = destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC
+        ? AssetId.BTC
+        : destinationAsset;
+
+      // Call API route for price quote
+      const params = new URLSearchParams({
+        fromChain: baseNetwork,
+        toChain: destinationNetwork,
+        fromAsset: fromAssetId,
+        toAsset: toAssetId,
+        amount: amount,
+      });
+
+      const response = await fetch(`/api/price?${params}`);
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to fetch price");
       }
 
-      // Determine the to asset based on destination network
-      let toAssetKey = "ETH";
-      if (destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC) {
-        toAssetKey = "BTC";
-      } else if (isDestinationNetworkEVM) {
-        toAssetKey = destinationAsset === AssetId.USDC ? "USDC" : "ETH";
-      }
-
-      const fromRate = mockRates[fromAssetKey] || 1;
-      const toRate = mockRates[toAssetKey] || 1;
-
-      const quote = parseFloat(amount) * (fromRate / toRate);
-      setPriceQuote(quote);
+      const exchangeRate = data.outputAmount / parseFloat(amount);
+      
+      setPriceQuote({
+        outputAmount: data.outputAmount,
+        fromPriceUSD: data.fromPriceUSD,
+        toPriceUSD: data.toPriceUSD,
+        exchangeRate: exchangeRate,
+      });
 
       // Calculate fee (0.3%)
-      const fee = quote * 0.003;
+      const fee = data.outputAmount * 0.003;
       setFeeAmount(fee);
     } catch (error) {
       console.error("Error fetching price:", error);
@@ -471,19 +482,35 @@ export default function SwapPage({
               {priceQuote !== null && (
                 <Card variant="hologram" className="mt-6">
                   <CardContent className="p-4">
-                    <div className="text-center space-y-2">
+                    <div className="text-center space-y-3">
                       <div className="text-sm font-space text-cyber-cyan uppercase tracking-wider">
-                        Navigation Quote
+                        Exchange Quote
                       </div>
-                      <div className="text-lg font-mono text-white">
-                        {(priceQuote - feeAmount).toFixed(8)}{" "}
-                        {destinationNetwork === ChainId.LIGHTNING
-                          ? "BTC"
-                          : "tokens"}
+                      
+                      {/* Exchange Rate */}
+                      <div className="p-3 bg-space-black/50 rounded-lg border border-cyber-cyan/30">
+                        <div className="text-xs text-white/60 mb-1">Exchange Rate</div>
+                        <div className="text-sm font-mono text-white">
+                          1 {isBaseNetworkEVM ? selectedAsset : "BTC"} = {priceQuote.exchangeRate.toFixed(6)}{" "}
+                          {isDestinationNetworkEVM ? destinationAsset : "BTC"}
+                        </div>
+                        <div className="text-xs text-white/40 mt-1">
+                          ${priceQuote.fromPriceUSD.toFixed(2)} → ${priceQuote.toPriceUSD.toFixed(2)}
+                        </div>
                       </div>
-                      <div className="text-xs text-white/60 space-y-1">
-                        <div>Protocol fee (0.3%): {feeAmount.toFixed(8)}</div>
-                        <div>Total: {priceQuote.toFixed(8)}</div>
+
+                      {/* Output Amount */}
+                      <div className="border-t border-cyber-cyan/20 pt-3">
+                        <div className="text-lg font-mono text-white">
+                          {(priceQuote.outputAmount - feeAmount).toFixed(8)}{" "}
+                          {destinationNetwork === ChainId.LIGHTNING || destinationNetwork === ChainId.BTC
+                            ? "BTC"
+                            : destinationAsset}
+                        </div>
+                        <div className="text-xs text-white/60 space-y-1 mt-2">
+                          <div>Protocol fee (0.3%): {feeAmount.toFixed(8)}</div>
+                          <div>Total output: {priceQuote.outputAmount.toFixed(8)}</div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -592,7 +619,7 @@ export default function SwapPage({
                   </div>
                   <div className="text-xl font-mono text-white">
                     {priceQuote
-                      ? (priceQuote - feeAmount).toFixed(8)
+                      ? (priceQuote.outputAmount - feeAmount).toFixed(8)
                       : "0.00000000"}
                   </div>
                   <div className="text-sm text-white/60">
