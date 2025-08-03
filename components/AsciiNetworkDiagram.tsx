@@ -1,36 +1,7 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-
-interface AsciiNetworkDiagramProps {
-  activeNetwork?: string;
-}
-
-const AsciiNetworkDiagram: React.FC<AsciiNetworkDiagramProps> = ({
-  activeNetwork = "unichain",
-}) => {
-  const [sparkleFrame, setSparkleFrame] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSparkleFrame((prev) => (prev + 1) % 3);
-    }, 800);
-    return () => clearInterval(interval);
-  }, []);
-
-  const sparkles = [
-    ["  ·  ", " · · ", "· · ·", " · · ", "  ·  "],
-    [" · · ", "· · ·", "  ·  ", "· · ·", " · · "],
-    ["· · ·", "  ·  ", " · · ", "  ·  ", "· · ·"],
-  ];
-
+export default function AsciiNetworkDiagram() {
   const asciiArt = `
 ╔═════════════════════════════════════════════════════════════════════════════╗
-║                                                                             ║
-║                    CROSS-CHAIN ATOMIC SWAP ARCHITECTURE                     ║
-║                                                                             ║
-║                   ${sparkles[sparkleFrame][1]}          ${sparkles[sparkleFrame][2]}          ${sparkles[sparkleFrame][3]}                      ║
-║                                                                             ║
+
 ║         ┌──────────────┐                       ┌──────────────┐             ║
 ║         │      █       │                       │       █╗     │             ║
 ║         │   ██████╗    │  BITCOIN              │     ██╔╝     │  LIGHTNING  ║
@@ -44,13 +15,13 @@ const AsciiNetworkDiagram: React.FC<AsciiNetworkDiagramProps> = ({
 ║                └──────────────┬───────────────────────┘                     ║
 ║                               │                                             ║
 ║                 ╔═════════════╧═════════════╗                               ║
-║                 ║    ATOMIC SWAP BRIDGE     ║                               ║
+║                 ║    POLARIS     ║                               ║
 ║                 ╚═════════════╤═════════════╝                               ║
 ║                               │                                             ║
 ║      ┌────────────────────────┴─────────────────────────┐                   ║
 ║      │                         │                        │                   ║
 ║   ┌──┴─────┐              ┌────┴────┐              ┌────┴────┐              ║
-║   │UNICHAIN│              │ETHEREUM │              │  BASE   │              ║
+║   │UNICHAIN│              │ANY EVM │              │  BASE   │              ║
 ║   │        │              │ ███████ │              │         │              ║
 ║   │ ██  ██ │              │ ██      │              │ ██████  │              ║
 ║   │ ██  ██ │              │ █████   │              │ ██████  │              ║
@@ -60,15 +31,6 @@ const AsciiNetworkDiagram: React.FC<AsciiNetworkDiagramProps> = ({
 ║   ││ LIVE ││              ││COMING│ │              ││COMING│ │              ║
 ║   │└──────┘│              │└──────┘ │              │└──────┘ │              ║
 ║   └────────┘              └─────────┘              └─────────┘              ║
-║                                                                             ║
-║   ─────────────────────────────────────────────────────────────────────     ║
-║                                                                             ║
-║   ┌─────────────────────────────────────────────────────────────────┐       ║
-║   │  • Direct BTC ↔ EVM swaps without wrapped tokens                │       ║
-║   │  • Lightning Network support for instant settlements            │       ║
-║   │  • No intermediaries - pure cryptographic guarantees            │       ║
-║   │  • MEV-resistant atomic swap protocol                           │       ║
-║   └─────────────────────────────────────────────────────────────────┘       ║
 ║                                                                             ║
 ╚═════════════════════════════════════════════════════════════════════════════╝
 `;
@@ -82,6 +44,4 @@ const AsciiNetworkDiagram: React.FC<AsciiNetworkDiagramProps> = ({
       </div>
     </div>
   );
-};
-
-export default AsciiNetworkDiagram;
+}
