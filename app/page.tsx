@@ -227,7 +227,7 @@ export default function Home() {
           {/* ASCII Network Diagram */}
           <div className="mb-16 flex justify-center">
             <div className="max-w-5xl w-full">
-              <AsciiNetworkDiagram activeNetwork="unichain" />
+              <AsciiNetworkDiagram />
             </div>
           </div>
         </div>
