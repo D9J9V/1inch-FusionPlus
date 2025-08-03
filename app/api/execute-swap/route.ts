@@ -98,11 +98,16 @@ export async function POST(request: NextRequest) {
     );
 
     try {
+      // Convert "ETH" string to native token address if needed
+      const tokenAddress = from_token === "ETH" 
+        ? "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" 
+        : from_token;
+      
       // Call initiateEvmSwap on BitcoinResolver contract
       const tx = await bitcoinResolver.initiateEvmSwap(
         user_address,
         htlcHash,
-        from_token,
+        tokenAddress,
         amount,
         3600, // 1 hour timeout
       );
@@ -205,8 +210,12 @@ async function triggerNativeBitcoinHandler(
   recipientAddress: string,
 ) {
   // Call the native-btc API endpoint
+  const apiUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3000' 
+    : process.env.NEXT_PUBLIC_APP_URL;
+    
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/resolver/native-btc`,
+    `${apiUrl}/api/resolver/native-btc`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -225,8 +234,12 @@ async function triggerNativeBitcoinHandler(
 
 async function triggerLightningHandler(htlcHash: string, amount: string) {
   // Call the lightning API endpoint
+  const apiUrl = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3000' 
+    : process.env.NEXT_PUBLIC_APP_URL;
+    
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/resolver/lightning`,
+    `${apiUrl}/api/resolver/lightning`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
