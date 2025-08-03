@@ -3,13 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Star,
   Zap,
   Shield,
   Orbit,
   ArrowRight,
   Bitcoin,
-  Layers,
   Lock,
   Unlock,
   Activity,
@@ -147,37 +145,33 @@ export default function Home() {
       {/* Swap Routes Section */}
       <section className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-2">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
               Cross-Chain Trading Routes
             </h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto mb-2">
-              Trade directly between Bitcoin, Lightning Network and any EVM chain
+              Trade directly between Bitcoin, Lightning Network and any EVM
+              chain
             </p>
-            <p className="text-lg text-cyber-cyan/80 font-mono">
-              No wrapped tokens. No bridges. Pure atomic swaps.
-            </p>
-          </div>
-
-          {/* ASCII Network Diagram */}
-          <div className="mb-16 flex justify-center">
-            <div className="max-w-5xl w-full">
-              <AsciiNetworkDiagram activeNetwork="unichain" />
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {swapRoutes.map((route, index) => (
-              <div key={route.href} className={route.active ? "" : "opacity-40"}>
-                <Link 
-                  href={route.active ? route.href : "#"} 
+              <div
+                key={route.href}
+                className={route.active ? "" : "opacity-40"}
+              >
+                <Link
+                  href={route.active ? route.href : "#"}
                   className={!route.active ? "cursor-not-allowed" : ""}
                   onClick={(e) => !route.active && e.preventDefault()}
                 >
                   <Card
                     variant="hologram"
                     className={`h-full transition-all duration-500 ${
-                      route.active ? "hover:scale-105 cursor-pointer" : "cursor-not-allowed"
+                      route.active
+                        ? "hover:scale-105 cursor-pointer"
+                        : "cursor-not-allowed"
                     } ${
                       activeRoute === index && route.active
                         ? "ring-2 ring-cyber-cyan/50 shadow-glow-cyan"
@@ -193,26 +187,34 @@ export default function Home() {
                       >
                         {route.icon}
                       </div>
-                      <h3 className={`font-space font-semibold text-lg uppercase tracking-wider ${
-                        route.active ? "text-white" : "text-gray-500"
-                      }`}>
+                      <h3
+                        className={`font-space font-semibold text-lg uppercase tracking-wider ${
+                          route.active ? "text-white" : "text-gray-500"
+                        }`}
+                      >
                         {route.from}
                       </h3>
                       <div className="flex items-center justify-center my-2">
-                        <ArrowRight className={`w-4 h-4 ${
-                          route.active ? "text-cyber-cyan" : "text-gray-600"
-                        }`} />
+                        <ArrowRight
+                          className={`w-4 h-4 ${
+                            route.active ? "text-cyber-cyan" : "text-gray-600"
+                          }`}
+                        />
                       </div>
-                      <h3 className={`font-space font-semibold text-lg uppercase tracking-wider ${
-                        route.active ? "text-cyber-cyan" : "text-gray-500"
-                      }`}>
+                      <h3
+                        className={`font-space font-semibold text-lg uppercase tracking-wider ${
+                          route.active ? "text-cyber-cyan" : "text-gray-500"
+                        }`}
+                      >
                         {route.to}
                       </h3>
                     </CardHeader>
                     <CardContent>
-                      <p className={`text-sm text-center font-mono ${
-                        route.active ? "text-white/60" : "text-gray-600"
-                      }`}>
+                      <p
+                        className={`text-sm text-center font-mono ${
+                          route.active ? "text-white/60" : "text-gray-600"
+                        }`}
+                      >
                         {route.description}
                       </p>
                     </CardContent>
@@ -221,44 +223,12 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-cosmic-dust/20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-              Key Features
-            </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Advanced technology powering the future of cross-chain
-              transactions
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card
-                key={feature.title}
-                variant="terminal"
-                className="text-center h-full"
-              >
-                <CardContent className="p-8">
-                  <div
-                    className={`text-${feature.color} mb-6 flex justify-center`}
-                  >
-                    {feature.icon}
-                  </div>
-                  <h3 className="font-space font-semibold text-lg text-white mb-4 uppercase tracking-wider">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-white/70 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          {/* ASCII Network Diagram */}
+          <div className="mb-16 flex justify-center">
+            <div className="max-w-5xl w-full">
+              <AsciiNetworkDiagram activeNetwork="unichain" />
+            </div>
           </div>
         </div>
       </section>
