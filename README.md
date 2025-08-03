@@ -62,7 +62,62 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
   architecture. This requires implementing an escrow/HTLC mechanism on the Bitcoin side and an orchestrator (resolver/relayer) to
   manage the swap process
 
+## 1inch Submission
+
+This project extensively leverages 1inch technologies to enable trustless cross-chain swaps between Bitcoin/Lightning and EVM chains:
+
+### 1inch Spot Price API Integration
+- **Location**: [`app/api/price/route.ts`](app/api/price/route.ts#L92-L100)
+- **Purpose**: Real-time price discovery for cross-chain swaps
+- **Implementation**: 
+  - API endpoint configuration at lines 5-6
+  - Chain ID mapping for Unichain support at lines 9-11
+  - Price fetching logic at lines 92-100
+  - WBTC proxy pricing for Bitcoin assets at lines 54-66
+
+### 1inch Fusion+ Architecture Implementation
+
+#### Deployed Contracts on Unichain Sepolia
+- **EVMHtlcEscrow**: [`0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8`](https://sepolia.uniscan.xyz/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8)
+- **BitcoinResolver**: [`0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078`](https://sepolia.uniscan.xyz/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078)
+
+- **Resolver Pattern**: [`smart-contracts/bitcoin/BitcoinResolver.sol`](smart-contracts/bitcoin/BitcoinResolver.sol)
+  - Implements the resolver/relayer pattern from Fusion+
+  - Acts as trusted on-chain agent for intent execution
+  - Handles atomic swap orchestration
+
+- **Intent-Based Swap Execution**: [`app/api/execute-swap/route.ts`](app/api/execute-swap/route.ts)
+  - Users express swap intents without specifying execution details
+  - Resolver handles gas costs and complex multi-step execution
+  - State machine tracks swap lifecycle similar to Fusion+
+
+- **HTLC Escrow Contract**: [`smart-contracts/bitcoin/EVMHtlcEscrow.sol`](smart-contracts/bitcoin/EVMHtlcEscrow.sol)
+  - Implements atomic swap guarantees using HTLCs
+  - Compatible with 1inch's gasless execution model
+  - 0.3% protocol fee structure for resolver incentives
+
+- **Partial Fills with Merkle Trees**: [`smart-contracts/src/PartialFillHTLC.sol`](smart-contracts/src/PartialFillHTLC.sol)
+  - Extends Fusion+ architecture to support partial order fills
+  - Uses Merkle trees for gas-efficient verification of multiple partial claims
+  - Enables large orders to be filled incrementally while maintaining atomic guarantees
+  - Key features:
+    - Merkle root contains all valid secret-amount pairs for a swap
+    - Each partial fill verifies against the Merkle tree
+    - Supports batch claiming of multiple partials in one transaction
+    - Minimum fill amounts prevent dust attacks
+    - Unused portions can be refunded after timeout
+
+### Key Integration Points
+1. **Price Discovery**: 1inch API provides accurate cross-chain pricing
+2. **Architecture Pattern**: Fusion+ intent-based design extended to Bitcoin
+3. **Gasless UX**: Users don't pay gas fees, matching 1inch's user experience
+4. **Professional Resolvers**: Market-driven execution similar to 1inch network
+
+For the complete technical implementation details and prize application, see [PROJECT_SUBMISSION.md](PROJECT_SUBMISSION.md#1inch-prize-application)
+
 ## Developer Setup
+
+To test this project locally you'll need a supabase instance connection. It's used to store orders before execution. Apply the migration to your PG, add the envs used by the clients and run `npx supabase link` to be able to run the typegen command on the package.json.
 
 ### Prerequisites
 - Node.js v18+ and npm/yarn
@@ -223,56 +278,3 @@ To verify contracts on Unichain Sepolia using Blockscout (no API key required):
 3. **View Verified Contracts**
    - EVMHtlcEscrow: https://unichain-sepolia.blockscout.com/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8
    - BitcoinResolver: https://unichain-sepolia.blockscout.com/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078
-
-## 1inch Submission
-
-This project extensively leverages 1inch technologies to enable trustless cross-chain swaps between Bitcoin/Lightning and EVM chains:
-
-### 1inch Spot Price API Integration
-- **Location**: [`app/api/price/route.ts`](app/api/price/route.ts#L92-L100)
-- **Purpose**: Real-time price discovery for cross-chain swaps
-- **Implementation**: 
-  - API endpoint configuration at lines 5-6
-  - Chain ID mapping for Unichain support at lines 9-11
-  - Price fetching logic at lines 92-100
-  - WBTC proxy pricing for Bitcoin assets at lines 54-66
-
-### 1inch Fusion+ Architecture Implementation
-
-#### Deployed Contracts on Unichain Sepolia
-- **EVMHtlcEscrow**: [`0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8`](https://sepolia.uniscan.xyz/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8)
-- **BitcoinResolver**: [`0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078`](https://sepolia.uniscan.xyz/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078)
-
-- **Resolver Pattern**: [`smart-contracts/bitcoin/BitcoinResolver.sol`](smart-contracts/bitcoin/BitcoinResolver.sol)
-  - Implements the resolver/relayer pattern from Fusion+
-  - Acts as trusted on-chain agent for intent execution
-  - Handles atomic swap orchestration
-
-- **Intent-Based Swap Execution**: [`app/api/execute-swap/route.ts`](app/api/execute-swap/route.ts)
-  - Users express swap intents without specifying execution details
-  - Resolver handles gas costs and complex multi-step execution
-  - State machine tracks swap lifecycle similar to Fusion+
-
-- **HTLC Escrow Contract**: [`smart-contracts/bitcoin/EVMHtlcEscrow.sol`](smart-contracts/bitcoin/EVMHtlcEscrow.sol)
-  - Implements atomic swap guarantees using HTLCs
-  - Compatible with 1inch's gasless execution model
-  - 0.3% protocol fee structure for resolver incentives
-
-- **Partial Fills with Merkle Trees**: [`smart-contracts/src/PartialFillHTLC.sol`](smart-contracts/src/PartialFillHTLC.sol)
-  - Extends Fusion+ architecture to support partial order fills
-  - Uses Merkle trees for gas-efficient verification of multiple partial claims
-  - Enables large orders to be filled incrementally while maintaining atomic guarantees
-  - Key features:
-    - Merkle root contains all valid secret-amount pairs for a swap
-    - Each partial fill verifies against the Merkle tree
-    - Supports batch claiming of multiple partials in one transaction
-    - Minimum fill amounts prevent dust attacks
-    - Unused portions can be refunded after timeout
-
-### Key Integration Points
-1. **Price Discovery**: 1inch API provides accurate cross-chain pricing
-2. **Architecture Pattern**: Fusion+ intent-based design extended to Bitcoin
-3. **Gasless UX**: Users don't pay gas fees, matching 1inch's user experience
-4. **Professional Resolvers**: Market-driven execution similar to 1inch network
-
-For the complete technical implementation details and prize application, see [PROJECT_SUBMISSION.md](PROJECT_SUBMISSION.md#1inch-prize-application)
