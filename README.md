@@ -63,7 +63,166 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
   manage the swap process
 
 ## Developer Setup
-- To test this project locally you'll need a supabase instance connection. It's used to store orders before execution. Apply the migration to you PG, add the envs used by the clients and run `npx supabase link` to be able to run the typegen command on the package.json
+
+### Prerequisites
+- Node.js v18+ and npm/yarn
+- Foundry for smart contract development
+- Docker (for Polar Lightning setup)
+- Git
+
+### 1. Clone and Install Dependencies
+```bash
+git clone https://github.com/D9J9V/polaris.git
+cd polaris
+npm install
+cd smart-contracts && forge install
+```
+
+### 2. Bitcoin Core Setup (Testnet Keys)
+Install Bitcoin Core and generate testnet keys:
+```bash
+# macOS with Homebrew
+brew install bitcoin
+
+# Start bitcoind in testnet mode
+bitcoind -testnet -daemon
+
+# Generate a new testnet address
+bitcoin-cli -testnet getnewaddress "" "legacy"
+
+# Get the private key for that address
+bitcoin-cli -testnet dumpprivkey "YOUR_ADDRESS_HERE"
+```
+
+Alternative quick method:
+```bash
+# Using Node.js
+npm install -g coinkey
+coinkey --testnet
+# This outputs both address and private key
+```
+
+### 3. Lightning Network Setup with Polar
+Polar provides a local Lightning Network environment:
+
+1. **Download Polar** from https://lightningpolar.com/
+2. **Create a Network:**
+   - Click "Create Network"
+   - Add 1 LND node
+   - Click "Start" to launch the network
+3. **Get Connection Details:**
+   - Right-click the LND node → "Connect"
+   - Copy the connection details displayed
+4. **Extract Credentials:**
+   ```bash
+   # The connection screen shows paths to:
+   # - TLS Certificate
+   # - Admin Macaroon
+   
+   # Convert to base64 for .env file:
+   base64 /path/to/tls.cert > lnd_cert.txt
+   base64 /path/to/admin.macaroon > lnd_macaroon.txt
+   ```
+
+### 4. Smart Contract Deployment
+Deploy contracts to Unichain Sepolia:
+```bash
+cd smart-contracts
+
+# Deploy EVMHtlcEscrow
+forge create --rpc-url https://sepolia.unichain.org/ \
+  --private-key YOUR_PRIVATE_KEY \
+  bitcoin/EVMHtlcEscrow.sol:EVMHtlcEscrow \
+  --constructor-args "YOUR_RESOLVER_ADDRESS"
+
+# Deploy BitcoinResolver (use the EVMHtlcEscrow address from above)
+forge create --rpc-url https://sepolia.unichain.org/ \
+  --private-key YOUR_PRIVATE_KEY \
+  bitcoin/BitcoinResolver.sol:BitcoinResolver \
+  --constructor-args "HTLC_ESCROW_ADDRESS" "YOUR_RESOLVER_ADDRESS"
+```
+
+### 5. Environment Configuration
+Copy `.env.example` to `.env` and configure:
+```bash
+# EVM Configuration
+EVM_RPC_URL=https://sepolia.unichain.org/
+BITCOIN_RESOLVER_ADDRESS=0x... # BitcoinResolver contract address
+HTLC_ESCROW_ADDRESS=0x...      # EVMHtlcEscrow contract address
+RESOLVER_PRIVATE_KEY=0x...     # Your EVM private key
+
+# Bitcoin Configuration
+BITCOIN_NETWORK=testnet
+BITCOIN_RPC_URL=https://blockstream.info/testnet/api
+BITCOIN_PRIVATE_KEY=...        # From bitcoin-cli or coinkey
+
+# Lightning Configuration (from Polar)
+LND_HOST=localhost:10009       # Or your Polar node endpoint
+LND_MACAROON=...              # Base64 encoded admin.macaroon
+LND_CERT=...                  # Base64 encoded tls.cert
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+
+# 1inch API
+1INCH_API_KEY=...             # Get from https://portal.1inch.dev/
+```
+
+### 6. Database Setup
+Set up Supabase for order management:
+```bash
+# Link to your Supabase project
+npx supabase link
+
+# Apply migrations
+npx supabase db push
+
+# Generate TypeScript types
+npm run supabase:types
+```
+
+### 7. Run the Application
+```bash
+# Development mode
+npm run dev
+
+# Build for production
+npm run build
+npm start
+```
+
+### 8. Contract Verification (Optional)
+To verify contracts on Unichain Sepolia using Blockscout (no API key required):
+
+1. **Verify EVMHtlcEscrow**
+   ```bash
+   forge verify-contract \
+     --chain 1301 \
+     --verifier blockscout \
+     --verifier-url https://unichain-sepolia.blockscout.com/api/ \
+     --num-of-optimizations 200 \
+     0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8 \
+     bitcoin/EVMHtlcEscrow.sol:EVMHtlcEscrow \
+     --constructor-args $(cast abi-encode "constructor(address)" "0xfC5fA9EE7EEA94a038d8f6Ece9DEb419D346BBe4")
+   ```
+
+2. **Verify BitcoinResolver**
+   ```bash
+   forge verify-contract \
+     --chain 1301 \
+     --verifier blockscout \
+     --verifier-url https://unichain-sepolia.blockscout.com/api/ \
+     --num-of-optimizations 200 \
+     0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078 \
+     bitcoin/BitcoinResolver.sol:BitcoinResolver \
+     --constructor-args $(cast abi-encode "constructor(address,address)" "0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8" "0x8e9284617b312Cda3EEc11ccA2e3d41B1130009b")
+   ```
+
+3. **View Verified Contracts**
+   - EVMHtlcEscrow: https://unichain-sepolia.blockscout.com/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8
+   - BitcoinResolver: https://unichain-sepolia.blockscout.com/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078
 
 ## 1inch Submission
 
@@ -79,6 +238,11 @@ This project extensively leverages 1inch technologies to enable trustless cross-
   - WBTC proxy pricing for Bitcoin assets at lines 54-66
 
 ### 1inch Fusion+ Architecture Implementation
+
+#### Deployed Contracts on Unichain Sepolia
+- **EVMHtlcEscrow**: [`0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8`](https://sepolia.uniscan.xyz/address/0x6f9fa7aFBe650777F76cD51d232E54e07DC7FbC8)
+- **BitcoinResolver**: [`0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078`](https://sepolia.uniscan.xyz/address/0xdd6EC3Ea31658CBa89d7cF37f2f0AF8779D00078)
+
 - **Resolver Pattern**: [`smart-contracts/bitcoin/BitcoinResolver.sol`](smart-contracts/bitcoin/BitcoinResolver.sol)
   - Implements the resolver/relayer pattern from Fusion+
   - Acts as trusted on-chain agent for intent execution
