@@ -27,7 +27,7 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
     const interval = setInterval(() => {
-      setActiveRoute((prev) => (prev + 1) % swapRoutes.length);
+      setActiveRoute((prev) => (prev + 1) % 2); // Only cycle through active routes
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -161,9 +161,9 @@ export default function Home() {
 
           {/* ASCII Network Diagram */}
           <div className="mb-16 flex justify-center">
-            <Card variant="terminal" className="p-6 max-w-4xl w-full">
+            <div className="max-w-5xl w-full">
               <AsciiNetworkDiagram activeNetwork="unichain" />
-            </Card>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
