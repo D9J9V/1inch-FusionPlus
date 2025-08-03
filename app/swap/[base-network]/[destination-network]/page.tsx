@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { chains, ChainId } from "@/types/chains";
 import { ethers } from "ethers";
+import { useRouter } from "next/navigation";
 import SwapStatusDashboard from "@/components/swap/SwapStatusDashboard";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import {
   ArrowRight,
@@ -32,6 +34,7 @@ export default function SwapPage({
 }: {
   params: Promise<{ "base-network": ChainId; "destination-network": ChainId }>;
 }) {
+  const router = useRouter();
   const [baseNetwork, setBaseNetwork] = useState<ChainId | null>(null);
   const [destinationNetwork, setDestinationNetwork] = useState<ChainId | null>(
     null,
@@ -61,6 +64,21 @@ export default function SwapPage({
       setDestinationNetwork(p["destination-network"]);
     });
   }, [params]);
+
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [pollingInterval]);
+
+  useEffect(() => {
+    if (amount) {
+      fetchPriceQuote();
+    }
+  }, [amount]);
 
   if (
     !baseNetwork ||
@@ -150,15 +168,6 @@ export default function SwapPage({
     setPollingInterval(interval);
   };
 
-  // Clean up polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
-    };
-  }, [pollingInterval]);
-
   // Fetch price quote
   const fetchPriceQuote = async () => {
     if (!amount || parseFloat(amount) <= 0) return;
@@ -191,12 +200,6 @@ export default function SwapPage({
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (amount) {
-      fetchPriceQuote();
-    }
-  }, [amount]);
 
   const claimWithSecret = async () => {
     if (!htlcHash) {
@@ -309,39 +312,45 @@ export default function SwapPage({
     }
   };
 
+  // Available networks for selection
+  const networkOptions = Object.entries(chains).map(([chainId, chain]) => ({
+    value: chainId,
+    label: chain.name,
+    icon: getChainIcon(chainId as ChainId),
+  }));
+
+  // Handle network changes
+  const handleBaseNetworkChange = (newNetwork: string) => {
+    if (newNetwork !== destinationNetwork) {
+      router.push(`/swap/${newNetwork}/${destinationNetwork}`);
+    }
+  };
+
+  const handleDestinationNetworkChange = (newNetwork: string) => {
+    if (newNetwork !== baseNetwork) {
+      router.push(`/swap/${baseNetwork}/${newNetwork}`);
+    }
+  };
+
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <Star className="w-8 h-8 text-cyber-cyan animate-pulse-glow mr-3" />
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-white">
-              COMMAND BRIDGE
-            </h1>
-            <Star className="w-8 h-8 text-cyber-cyan animate-pulse-glow ml-3" />
-          </div>
-          <p className="text-xl text-white/70 font-space">
-            Cross-chain navigation between {chains[baseNetwork].name} and{" "}
-            {chains[destinationNetwork].name}
-          </p>
-        </div>
-
         {/* Main Swap Interface */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Source Chain Terminal */}
           <Card variant="terminal" className="lg:col-span-1">
             <CardHeader>
-              <div className="flex items-center space-x-3">
-                {getChainIcon(baseNetwork)}
-                <div>
-                  <h3 className="font-display font-semibold text-lg text-white uppercase">
-                    Source Terminal
-                  </h3>
-                  <p className="text-sm text-white/60 font-mono">
-                    {chains[baseNetwork].name}
-                  </p>
-                </div>
+              <div className="space-y-3">
+                <h3 className="font-display font-semibold text-lg text-white uppercase">
+                  Source Network
+                </h3>
+                <Select
+                  value={baseNetwork}
+                  onChange={handleBaseNetworkChange}
+                  options={networkOptions}
+                  variant="terminal"
+                  className="w-full"
+                />
               </div>
             </CardHeader>
             <CardContent>
@@ -433,7 +442,7 @@ export default function SwapPage({
 
                 {/* Bridge Icon */}
                 <div className="relative z-10 p-4 bg-space-black border-2 border-cyber-cyan/50 rounded-full">
-                  <ArrowLeftRight className="w-8 h-8 text-cyber-cyan animate-pulse-glow" />
+                  <ArrowLeftRight className="w-8 h-8 text-cyber-cyan " />
                 </div>
               </div>
 
@@ -481,16 +490,17 @@ export default function SwapPage({
           {/* Destination Chain Terminal */}
           <Card variant="terminal" className="lg:col-span-1">
             <CardHeader>
-              <div className="flex items-center space-x-3">
-                {getChainIcon(destinationNetwork)}
-                <div>
-                  <h3 className="font-display font-semibold text-lg text-white uppercase">
-                    Destination Terminal
-                  </h3>
-                  <p className="text-sm text-white/60 font-mono">
-                    {chains[destinationNetwork].name}
-                  </p>
-                </div>
+              <div className="space-y-3">
+                <h3 className="font-display font-semibold text-lg text-white uppercase">
+                  Destination Network
+                </h3>
+                <Select
+                  value={destinationNetwork}
+                  onChange={handleDestinationNetworkChange}
+                  options={networkOptions}
+                  variant="terminal"
+                  className="w-full"
+                />
               </div>
             </CardHeader>
             <CardContent>
