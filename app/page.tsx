@@ -133,21 +133,21 @@ export default function Home() {
           </div>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 animate-bounce">
             <ChevronDown className="w-6 h-6 text-cyber-cyan/60" />
           </div>
         </div>
       </section>
 
       {/* Swap Routes Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
               Supported Routes
             </h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Available cross-chain swap routes with direct atomic swaps
+              Available cross-chain exchange routes
             </p>
           </div>
 
