@@ -28,8 +28,6 @@ export const assets: Record<AssetId, Asset> = {
     addresses: {
       [ChainId.BTC]: NATIVE_TOKEN,
       [ChainId.LIGHTNING]: NATIVE_TOKEN,
-      // WBTC on various chains
-      [ChainId.ETHEREUM]: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
     }
   },
   [AssetId.ETH]: {
@@ -38,8 +36,6 @@ export const assets: Record<AssetId, Asset> = {
     name: "Ether",
     decimals: 18,
     addresses: {
-      [ChainId.ETHEREUM]: NATIVE_TOKEN,
-      [ChainId.BASE]: NATIVE_TOKEN,
       [ChainId.UNICHAIN]: NATIVE_TOKEN,
     }
   },
@@ -49,9 +45,7 @@ export const assets: Record<AssetId, Asset> = {
     name: "USD Coin",
     decimals: 6,
     addresses: {
-      [ChainId.ETHEREUM]: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      [ChainId.BASE]: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-      // Add other chain addresses as needed
+      [ChainId.UNICHAIN]: "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4", // Placeholder USDC address on Unichain
     }
   }
 };

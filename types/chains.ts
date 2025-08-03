@@ -1,17 +1,11 @@
 // 1. Chain ID Enum - All supported chains
 export enum ChainId {
   // EVM Chains
-  ETHEREUM = "ethereum",
-  BASE = "base",
   UNICHAIN = "unichain",
 
   // Bitcoin Ecosystem
   BTC = "btc",
   LIGHTNING = "lightning",
-
-  // Polkadot Ecosystem
-  MOONBEAM = "moonbeam",
-  VARA = "vara",
 }
 
 // 2. Chain Type Categories
@@ -32,20 +26,6 @@ export interface ChainMetadata {
 }
 // 4. Chain Configuration
 export const chains: Record<ChainId, ChainMetadata> = {
-  [ChainId.ETHEREUM]: {
-    id: ChainId.ETHEREUM,
-    type: ChainType.EVM,
-    name: "Ethereum",
-    explorerUrl: "https://etherscan.io",
-    rpcUrl: "https://ethereum.rpc.thirdweb.com",
-  },
-  [ChainId.BASE]: {
-    id: ChainId.BASE,
-    type: ChainType.EVM,
-    name: "Base",
-    explorerUrl: "https://basescan.org",
-    rpcUrl: "https://base.rpc.thirdweb.com",
-  },
   [ChainId.UNICHAIN]: {
     id: ChainId.UNICHAIN,
     type: ChainType.EVM,
@@ -64,18 +44,5 @@ export const chains: Record<ChainId, ChainMetadata> = {
     type: ChainType.LIGHTNING,
     name: "Lightning Network",
     explorerUrl: "https://mempool.space",
-  },
-  [ChainId.MOONBEAM]: {
-    id: ChainId.MOONBEAM,
-    type: ChainType.SUBSTRATE,
-    name: "Moonbeam",
-    explorerUrl: "https://moonbeam.moonscan.io",
-    rpcUrl: "https://rpc.api.moonbeam.network",
-  },
-  [ChainId.VARA]: {
-    id: ChainId.VARA,
-    type: ChainType.SUBSTRATE,
-    name: "Vara Network",
-    explorerUrl: "https://vara.subscan.io",
   },
 };

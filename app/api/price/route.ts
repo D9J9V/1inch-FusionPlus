@@ -7,8 +7,7 @@ const ONEINCH_API_URL = 'https://api.1inch.dev/price/v1.1';
 
 // Chain IDs mapping for 1inch API
 const ONEINCH_CHAIN_IDS: Partial<Record<ChainId, number>> = {
-  [ChainId.ETHEREUM]: 1,
-  [ChainId.BASE]: 8453,
+  [ChainId.UNICHAIN]: 1301, // Unichain mainnet ID (placeholder - update when available)
   // Add more as needed
 };
 
