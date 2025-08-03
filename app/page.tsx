@@ -18,6 +18,7 @@ import {
 import Button from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import AsciiHero from "@/components/AsciiHero";
+import AsciiNetworkDiagram from "@/components/AsciiNetworkDiagram";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -144,11 +145,21 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
-              Supported Routes
+              Cross-Chain Trading Routes
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Available cross-chain exchange routes
+            <p className="text-xl text-white/70 max-w-3xl mx-auto mb-2">
+              Trade directly between Bitcoin, Lightning Network and any EVM chain
             </p>
+            <p className="text-lg text-cyber-cyan/80 font-mono">
+              No wrapped tokens. No bridges. Pure atomic swaps.
+            </p>
+          </div>
+
+          {/* ASCII Network Diagram */}
+          <div className="mb-16 flex justify-center">
+            <Card variant="terminal" className="p-6 max-w-4xl w-full">
+              <AsciiNetworkDiagram activeNetwork="unichain" />
+            </Card>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
