@@ -151,7 +151,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
               Cross-Chain Trading Routes
             </h2>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto mb-2">
+            <p className="text-xl text-white/70 max-w-3xl mx-auto mb-12">
               Trade directly between Bitcoin, Lightning Network and any EVM
               chain
             </p>
