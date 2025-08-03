@@ -1,37 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ChainId, ChainType, chains } from '@/types/chains';
-import { AssetId, getAssetAddress } from '@/types/assets';
+import { NextRequest, NextResponse } from "next/server";
+import { ChainId, ChainType, chains } from "@/types/chains";
+import { AssetId, getAssetAddress } from "@/types/assets";
 
 const ONEINCH_API_KEY = process.env.ONEINCH_API_KEY;
-const ONEINCH_API_URL = 'https://api.1inch.dev/price/v1.1';
+const ONEINCH_API_URL = "https://api.1inch.dev/price/v1.1";
 
 // Chain IDs mapping for 1inch API
 const ONEINCH_CHAIN_IDS: Partial<Record<ChainId, number>> = {
-  [ChainId.UNICHAIN]: 1301, // Unichain sepolia testnet ID
-  // Add more as needed
+  [ChainId.UNICHAIN]: 130,
 };
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const fromChain = searchParams.get('fromChain') as ChainId;
-    const toChain = searchParams.get('toChain') as ChainId;
-    const fromAsset = searchParams.get('fromAsset') as AssetId;
-    const toAsset = searchParams.get('toAsset') as AssetId;
-    const amount = searchParams.get('amount');
+    const fromChain = searchParams.get("fromChain") as ChainId;
+    const toChain = searchParams.get("toChain") as ChainId;
+    const fromAsset = searchParams.get("fromAsset") as AssetId;
+    const toAsset = searchParams.get("toAsset") as AssetId;
+    const amount = searchParams.get("amount");
 
     if (!fromChain || !toChain || !fromAsset || !toAsset || !amount) {
       return NextResponse.json(
-        { success: false, error: 'Missing required parameters' },
-        { status: 400 }
+        { success: false, error: "Missing required parameters" },
+        { status: 400 },
       );
     }
 
     // Validate chains exist
     if (!chains[fromChain] || !chains[toChain]) {
       return NextResponse.json(
-        { success: false, error: 'Invalid chain' },
-        { status: 400 }
+        { success: false, error: "Invalid chain" },
+        { status: 400 },
       );
     }
 
@@ -40,10 +39,10 @@ export async function GET(request: NextRequest) {
     const toChainType = chains[toChain].type;
 
     // Determine if we need to use WBTC proxy for Bitcoin pricing
-    const isBitcoinInvolved = 
-      fromChainType === ChainType.BITCOIN || 
+    const isBitcoinInvolved =
+      fromChainType === ChainType.BITCOIN ||
       fromChainType === ChainType.LIGHTNING ||
-      toChainType === ChainType.BITCOIN || 
+      toChainType === ChainType.BITCOIN ||
       toChainType === ChainType.LIGHTNING;
 
     // Map Bitcoin to WBTC for pricing purposes when dealing with cross-chain swaps
@@ -51,12 +50,12 @@ export async function GET(request: NextRequest) {
     let priceToAsset = toAsset;
     let priceFromChain = fromChain;
     let priceToChain = toChain;
-    
+
     if (isBitcoinInvolved) {
       // Use Unichain for all price lookups
       priceFromChain = ChainId.UNICHAIN;
       priceToChain = ChainId.UNICHAIN;
-      
+
       // Map BTC to WBTC for pricing
       if (fromAsset === AssetId.BTC) {
         priceFromAsset = AssetId.WBTC;
@@ -68,7 +67,7 @@ export async function GET(request: NextRequest) {
 
     // Use 1inch price API - always use Unichain for pricing
     const chainId = ONEINCH_CHAIN_IDS[ChainId.UNICHAIN];
-    
+
     if (!chainId) {
       return getMockPrice(fromAsset, toAsset, parseFloat(amount));
     }
@@ -78,8 +77,8 @@ export async function GET(request: NextRequest) {
 
     if (!fromAddress || !toAddress) {
       return NextResponse.json(
-        { success: false, error: 'Asset not available for pricing' },
-        { status: 400 }
+        { success: false, error: "Asset not available for pricing" },
+        { status: 400 },
       );
     }
 
@@ -91,13 +90,13 @@ export async function GET(request: NextRequest) {
     try {
       // Get prices from 1inch API
       const pricesUrl = `${ONEINCH_API_URL}/${chainId}`;
-      const tokenList = [fromAddress, toAddress].join(',');
-      
+      const tokenList = [fromAddress, toAddress].join(",");
+
       const response = await fetch(`${pricesUrl}?addresses=${tokenList}`, {
         headers: {
-          'Authorization': `Bearer ${ONEINCH_API_KEY}`,
-          'Accept': 'application/json',
-        }
+          Authorization: `Bearer ${ONEINCH_API_KEY}`,
+          Accept: "application/json",
+        },
       });
 
       if (!response.ok) {
@@ -106,14 +105,17 @@ export async function GET(request: NextRequest) {
       }
 
       const data = await response.json();
-      const fromTokenPriceUSD = parseFloat(data[fromAddress.toLowerCase()] || 0);
+      const fromTokenPriceUSD = parseFloat(
+        data[fromAddress.toLowerCase()] || 0,
+      );
       const toTokenPriceUSD = parseFloat(data[toAddress.toLowerCase()] || 0);
 
       if (fromTokenPriceUSD === 0 || toTokenPriceUSD === 0) {
         return getMockPrice(fromAsset, toAsset, parseFloat(amount));
       }
 
-      const outputAmount = (parseFloat(amount) * fromTokenPriceUSD) / toTokenPriceUSD;
+      const outputAmount =
+        (parseFloat(amount) * fromTokenPriceUSD) / toTokenPriceUSD;
 
       return NextResponse.json({
         success: true,
@@ -122,18 +124,17 @@ export async function GET(request: NextRequest) {
         fromPriceUSD: fromTokenPriceUSD,
         toPriceUSD: toTokenPriceUSD,
         exchangeRate: outputAmount / parseFloat(amount),
-        source: '1inch'
+        source: "1inch",
       });
     } catch (error) {
-      console.error('Error fetching 1inch prices:', error);
+      console.error("Error fetching 1inch prices:", error);
       return getMockPrice(fromAsset, toAsset, parseFloat(amount));
     }
-
   } catch (error) {
-    console.error('Error fetching price:', error);
+    console.error("Error fetching price:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch price' },
-      { status: 500 }
+      { success: false, error: "Failed to fetch price" },
+      { status: 500 },
     );
   }
 }
@@ -143,12 +144,12 @@ async function getBitcoinPrice(
   toChain: ChainId,
   fromAsset: AssetId,
   toAsset: AssetId,
-  amount: number
+  amount: number,
 ): Promise<NextResponse> {
   // For cross-chain swaps involving Bitcoin, we need to handle WBTC pricing
   const fromChainType = chains[fromChain].type;
   const toChainType = chains[toChain].type;
-  
+
   // Mock prices including WBTC
   const mockPrices: Record<AssetId, number> = {
     [AssetId.BTC]: 65000,
@@ -160,8 +161,11 @@ async function getBitcoinPrice(
   // For Bitcoin to EVM swaps, use WBTC price for the EVM side
   let effectiveFromAsset = fromAsset;
   let effectiveToAsset = toAsset;
-  
-  if (fromChainType === ChainType.BITCOIN || fromChainType === ChainType.LIGHTNING) {
+
+  if (
+    fromChainType === ChainType.BITCOIN ||
+    fromChainType === ChainType.LIGHTNING
+  ) {
     // From Bitcoin to EVM
     if (toChainType === ChainType.EVM) {
       // We're comparing BTC to WBTC/ETH/USDC
@@ -173,7 +177,10 @@ async function getBitcoinPrice(
     }
   } else if (fromChainType === ChainType.EVM) {
     // From EVM to Bitcoin
-    if (toChainType === ChainType.BITCOIN || toChainType === ChainType.LIGHTNING) {
+    if (
+      toChainType === ChainType.BITCOIN ||
+      toChainType === ChainType.LIGHTNING
+    ) {
       // If they're sending "BTC" from EVM, they're actually sending WBTC
       if (fromAsset === AssetId.BTC) {
         effectiveFromAsset = AssetId.WBTC;
@@ -187,8 +194,8 @@ async function getBitcoinPrice(
 
   if (!fromPrice || !toPrice) {
     return NextResponse.json(
-      { success: false, error: 'Price not available for asset' },
-      { status: 400 }
+      { success: false, error: "Price not available for asset" },
+      { status: 400 },
     );
   }
 
@@ -201,11 +208,15 @@ async function getBitcoinPrice(
     fromPriceUSD: fromPrice,
     toPriceUSD: toPrice,
     exchangeRate: outputAmount / amount,
-    source: 'mock'
+    source: "mock",
   });
 }
 
-function getMockPrice(fromAsset: AssetId, toAsset: AssetId, amount: number): NextResponse {
+function getMockPrice(
+  fromAsset: AssetId,
+  toAsset: AssetId,
+  amount: number,
+): NextResponse {
   const mockPrices: Record<AssetId, number> = {
     [AssetId.BTC]: 65000,
     [AssetId.WBTC]: 64900,
@@ -224,6 +235,6 @@ function getMockPrice(fromAsset: AssetId, toAsset: AssetId, amount: number): Nex
     fromPriceUSD: fromPrice,
     toPriceUSD: toPrice,
     exchangeRate: outputAmount / amount,
-    source: 'mock'
+    source: "mock",
   });
 }
