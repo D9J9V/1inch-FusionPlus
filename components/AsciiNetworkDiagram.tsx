@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface AsciiNetworkDiagramProps {
   activeNetwork?: string;
@@ -9,109 +9,77 @@ interface AsciiNetworkDiagramProps {
 const AsciiNetworkDiagram: React.FC<AsciiNetworkDiagramProps> = ({
   activeNetwork = "unichain",
 }) => {
-  const isActive = (network: string) =>
-    network.toLowerCase() === activeNetwork.toLowerCase();
+  const [sparkleFrame, setSparkleFrame] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSparkleFrame((prev) => (prev + 1) % 3);
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  const sparkles = [
+    ["  ·  ", " · · ", "· · ·", " · · ", "  ·  "],
+    [" · · ", "· · ·", "  ·  ", "· · ·", " · · "],
+    ["· · ·", "  ·  ", " · · ", "  ·  ", "· · ·"],
+  ];
+
+  const asciiArt = `
+╔═════════════════════════════════════════════════════════════════════════════╗
+║                                                                             ║
+║                   CROSS-CHAIN ATOMIC SWAP ARCHITECTURE                      ║
+║                                                                             ║
+║                     ${sparkles[sparkleFrame][1]}     ${sparkles[sparkleFrame][2]}     ${sparkles[sparkleFrame][3]}                               ║
+║                                                                             ║
+║                           ┌──────────────┐                                  ║
+║                           │   ██████╗    │                                  ║
+║                           │   ██╔══██╗   │  BITCOIN                         ║
+║                           │   ██████╔╝   │  NETWORK                         ║
+║                           │   ██╔══██╗   │                                  ║
+║                           │   ██████╔╝   │                                  ║
+║                           └──────┬───────┘                                  ║
+║                                  │                                          ║
+║                           ┌──────┴───────┐                                  ║
+║                           │      ⚡      │                                  ║
+║                           │  LIGHTNING   │                                  ║
+║                           │   NETWORK    │                                  ║
+║                           └──────┬───────┘                                  ║
+║                                  │                                          ║
+║                    ╔═════════════╧═════════════╗                            ║
+║                    ║    ATOMIC SWAP BRIDGE     ║                            ║
+║                    ╚═════════════╤═════════════╝                            ║
+║                                  │                                          ║
+║         ┌────────────────────────┴────────────────────────┐                ║
+║         │                        │                        │                ║
+║   ┌─────┴─────┐           ┌─────┴─────┐           ┌─────┴─────┐           ║
+║   │ UNICHAIN  │           │ ETHEREUM  │           │   BASE    │           ║
+║   │  ██   ██  │           │    ██     │           │    ██     │           ║
+║   │  ██   ██  │           │  ██████   │           │  ██████   │           ║
+║   │  ██   ██  │           │  ██       │           │  ██   ██  │           ║
+║   │  ╚════╝   │           │  ██████   │           │  ██████   │           ║
+║   │ ┌──────┐  │           │ ┌──────┐  │           │ ┌──────┐  │           ║
+║   │ │ LIVE │  │           │ │COMING│  │           │ │COMING│  │           ║
+║   │ └──────┘  │           │ └──────┘  │           │ └──────┘  │           ║
+║   └───────────┘           └───────────┘           └───────────┘           ║
+║                                                                             ║
+║   ─────────────────────────────────────────────────────────────────────    ║
+║                                                                             ║
+║   ┌─────────────────────────────────────────────────────────────────┐      ║
+║   │  • Direct BTC ↔ EVM swaps without wrapped tokens                │      ║
+║   │  • Lightning Network support for instant settlements             │      ║
+║   │  • No intermediaries - pure cryptographic guarantees            │      ║
+║   │  • MEV-resistant atomic swap protocol                           │      ║
+║   └─────────────────────────────────────────────────────────────────┘      ║
+║                                                                             ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+`;
 
   return (
-    <div className="font-mono text-xs sm:text-sm leading-relaxed whitespace-pre overflow-x-auto">
-      <div className="inline-block">
-        <div className="text-cyber-cyan">
-          {`
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                     CROSS-CHAIN ATOMIC SWAPS                        │
-    └─────────────────────────────────────────────────────────────────────┘
-    
-                              ┌──────────────┐
-                              │              │
-                              │   BITCOIN    │
-                              │   NETWORK    │
-                              │              │
-                              └──────┬───────┘
-                                     │
-                              ┌──────┴───────┐
-                              │              │
-                              │  LIGHTNING   │
-                              │   NETWORK    │
-                              │              │
-                              └──────┬───────┘
-                                     │
-                    ┌────────────────┼────────────────┐
-                    │                │                │
-                    │        ATOMIC SWAP HUB         │
-                    │                │                │
-                    └────────────────┼────────────────┘
-                                     │
-       ┌─────────────────────────────┼─────────────────────────────┐
-       │                             │                             │
-       │                             │                             │`}
-        </div>
-
-        <div className="flex justify-center">
-          <div className="flex space-x-4">
-            <div
-              className={
-                isActive("unichain") ? "text-cyber-cyan" : "text-gray-600"
-              }
-            >
-              {`┌─────────────┐`}
-            </div>
-            <div className="text-gray-600">{`┌─────────────┐`}</div>
-            <div className="text-gray-600">{`┌─────────────┐`}</div>
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <div className="flex space-x-4">
-            <div
-              className={
-                isActive("unichain") ? "text-cyber-cyan" : "text-gray-600"
-              }
-            >
-              {`│  UNICHAIN   │`}
-            </div>
-            <div className="text-gray-600">{`│  ETHEREUM   │`}</div>
-            <div className="text-gray-600">{`│    BASE     │`}</div>
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <div className="flex space-x-4">
-            <div
-              className={
-                isActive("unichain") ? "text-cyber-cyan" : "text-gray-600"
-              }
-            >
-              {`│   [LIVE]    │`}
-            </div>
-            <div className="text-gray-600">{`│  [COMING]   │`}</div>
-            <div className="text-gray-600">{`│  [COMING]   │`}</div>
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <div className="flex space-x-4">
-            <div
-              className={
-                isActive("unichain") ? "text-cyber-cyan" : "text-gray-600"
-              }
-            >
-              {`└─────────────┘`}
-            </div>
-            <div className="text-gray-600">{`└─────────────┘`}</div>
-            <div className="text-gray-600">{`└─────────────┘`}</div>
-          </div>
-        </div>
-
-        <div className="text-cyber-cyan mt-4">
-          {`
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │  FEATURES:                                                          │
-    │  • Direct BTC ↔ EVM swaps without wrapped tokens                   │
-    │  • Lightning Network support for instant settlements                │
-    │  • No intermediaries - pure cryptographic guarantees               │
-    │  • MEV-resistant atomic swap protocol                               │
-    └─────────────────────────────────────────────────────────────────────┘`}
-        </div>
+    <div className="font-mono text-xs sm:text-sm lg:text-base whitespace-pre text-center">
+      <div className="inline-block text-left">
+        <pre className="bg-gradient-to-r from-cyber-cyan via-cyber-purple to-cyber-cyan bg-clip-text text-transparent">
+          {asciiArt}
+        </pre>
       </div>
     </div>
   );
