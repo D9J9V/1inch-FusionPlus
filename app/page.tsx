@@ -34,12 +34,31 @@ export default function Home() {
 
   const swapRoutes = [
     {
+      from: "Unichain",
+      to: "Lightning",
+      href: "/swap/unichain/lightning",
+      icon: <Orbit className="w-5 h-5" />,
+      color: "from-purple-500 to-yellow-400",
+      description: "EVM to Lightning Network",
+      active: true,
+    },
+    {
+      from: "Unichain",
+      to: "Bitcoin",
+      href: "/swap/unichain/btc",
+      icon: <Bitcoin className="w-5 h-5" />,
+      color: "from-purple-500 to-orange-500",
+      description: "EVM to native BTC",
+      active: true,
+    },
+    {
       from: "Ethereum",
-      to: "Lightning Network",
+      to: "Lightning",
       href: "/swap/ethereum/lightning",
       icon: <Zap className="w-5 h-5" />,
       color: "from-blue-500 to-yellow-400",
-      description: "Instant micro-payments",
+      description: "Coming soon",
+      active: false,
     },
     {
       from: "Base",
@@ -47,23 +66,8 @@ export default function Home() {
       href: "/swap/base/btc",
       icon: <Bitcoin className="w-5 h-5" />,
       color: "from-blue-600 to-orange-500",
-      description: "Layer 2 to native BTC",
-    },
-    {
-      from: "Lightning",
-      to: "Ethereum",
-      href: "/swap/lightning/ethereum",
-      icon: <Layers className="w-5 h-5" />,
-      color: "from-yellow-400 to-blue-500",
-      description: "Lightning to DeFi",
-    },
-    {
-      from: "Unichain",
-      to: "Lightning",
-      href: "/swap/unichain/lightning",
-      icon: <Orbit className="w-5 h-5" />,
-      color: "from-purple-500 to-yellow-400",
-      description: "Next-gen swaps",
+      description: "Coming soon",
+      active: false,
     },
   ];
 
@@ -164,39 +168,57 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {swapRoutes.map((route, index) => (
-              <Link key={route.href} href={route.href}>
-                <Card
-                  variant="hologram"
-                  className={`h-full transition-all duration-500 hover:scale-105 cursor-pointer ${
-                    activeRoute === index
-                      ? "ring-2 ring-cyber-cyan/50 shadow-glow-cyan"
-                      : ""
-                  }`}
-                  glow={activeRoute === index}
+              <div key={route.href} className={route.active ? "" : "opacity-40"}>
+                <Link 
+                  href={route.active ? route.href : "#"} 
+                  className={!route.active ? "cursor-not-allowed" : ""}
+                  onClick={(e) => !route.active && e.preventDefault()}
                 >
-                  <CardHeader className="text-center">
-                    <div
-                      className={`w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r ${route.color} p-3 flex items-center justify-center`}
-                    >
-                      {route.icon}
-                    </div>
-                    <h3 className="font-space font-semibold text-lg text-white uppercase tracking-wider">
-                      {route.from}
-                    </h3>
-                    <div className="flex items-center justify-center my-2">
-                      <ArrowRight className="w-4 h-4 text-cyber-cyan" />
-                    </div>
-                    <h3 className="font-space font-semibold text-lg text-cyber-cyan uppercase tracking-wider">
-                      {route.to}
-                    </h3>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-white/60 text-center font-mono">
-                      {route.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
+                  <Card
+                    variant="hologram"
+                    className={`h-full transition-all duration-500 ${
+                      route.active ? "hover:scale-105 cursor-pointer" : "cursor-not-allowed"
+                    } ${
+                      activeRoute === index && route.active
+                        ? "ring-2 ring-cyber-cyan/50 shadow-glow-cyan"
+                        : ""
+                    }`}
+                    glow={activeRoute === index && route.active}
+                  >
+                    <CardHeader className="text-center">
+                      <div
+                        className={`w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r ${route.color} p-3 flex items-center justify-center ${
+                          !route.active ? "grayscale" : ""
+                        }`}
+                      >
+                        {route.icon}
+                      </div>
+                      <h3 className={`font-space font-semibold text-lg uppercase tracking-wider ${
+                        route.active ? "text-white" : "text-gray-500"
+                      }`}>
+                        {route.from}
+                      </h3>
+                      <div className="flex items-center justify-center my-2">
+                        <ArrowRight className={`w-4 h-4 ${
+                          route.active ? "text-cyber-cyan" : "text-gray-600"
+                        }`} />
+                      </div>
+                      <h3 className={`font-space font-semibold text-lg uppercase tracking-wider ${
+                        route.active ? "text-cyber-cyan" : "text-gray-500"
+                      }`}>
+                        {route.to}
+                      </h3>
+                    </CardHeader>
+                    <CardContent>
+                      <p className={`text-sm text-center font-mono ${
+                        route.active ? "text-white/60" : "text-gray-600"
+                      }`}>
+                        {route.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
             ))}
           </div>
         </div>
