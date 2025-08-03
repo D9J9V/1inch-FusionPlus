@@ -48,9 +48,7 @@ const Navigation: React.FC<NavigationProps> = ({ className }) => {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <span className="text-3xl group-hover:animate-pulse-glow transition-all duration-300">
-                  ✨
-                </span>
+                <span className="text-3xl transition-all duration-300">✨</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-display font-bold text-white group-hover:text-cyber-cyan transition-colors duration-300">
@@ -76,10 +74,13 @@ const Navigation: React.FC<NavigationProps> = ({ className }) => {
 
               {/* Network indicator */}
               <div className="flex items-center space-x-1">
-                <Satellite className="w-4 h-4 text-cyber-cyan animate-pulse" />
+                <Satellite
+                  className="w-4 h-4 text-cyber-cyan animate-pulse"
+                  style={{ animationDuration: "10s" }}
+                />
                 <Radar
                   className="w-4 h-4 text-cyber-purple animate-spin"
-                  style={{ animationDuration: "3s" }}
+                  style={{ animationDuration: "10s" }}
                 />
               </div>
             </div>
