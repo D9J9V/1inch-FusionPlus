@@ -46,7 +46,7 @@ export const assets: Record<AssetId, Asset> = {
     name: "USD Coin",
     decimals: 6,
     addresses: {
-      [ChainId.UNICHAIN]: "0x078d782b760474a361dda0af3839290b0ef57ad6",
+      [ChainId.UNICHAIN]: "0x31d0220469e10c4E71834a79b1f276d740d3768F",
     },
   },
   [AssetId.WBTC]: {
