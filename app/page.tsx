@@ -132,40 +132,6 @@ export default function Home() {
             </Button>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <Card variant="hologram" className="text-center">
-              <CardContent className="p-6">
-                <div className="text-3xl font-bold text-cyber-cyan mb-2">0</div>
-                <div className="text-sm font-space uppercase tracking-wider text-white/70">
-                  Trustless Swaps
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card variant="hologram" className="text-center">
-              <CardContent className="p-6">
-                <div className="text-3xl font-bold text-cyber-purple mb-2">
-                  ⚡
-                </div>
-                <div className="text-sm font-space uppercase tracking-wider text-white/70">
-                  Lightning Fast
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card variant="hologram" className="text-center">
-              <CardContent className="p-6">
-                <div className="text-3xl font-bold text-nebula-green mb-2">
-                  🛡️
-                </div>
-                <div className="text-sm font-space uppercase tracking-wider text-white/70">
-                  MEV Protected
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
           {/* Scroll Indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <ChevronDown className="w-6 h-6 text-cyber-cyan/60" />
@@ -361,7 +327,7 @@ export default function Home() {
               </Button>
             </Link>
 
-            <Link href="/docs">
+            <Link href="https://github.com/D9J9V/polaris">
               <Button
                 variant="secondary"
                 size="xl"
