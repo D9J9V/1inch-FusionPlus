@@ -124,15 +124,17 @@ export default function Home() {
 
           {/* Swap Button */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Button
-              size="xl"
-              glow
-              pulse
-              rightIcon={<ArrowRight className="w-5 h-5" />}
-              className="min-w-[200px]"
-            >
-              Start Swap
-            </Button>
+            <Link href="/swap/unichain/lightning">
+              <Button
+                size="xl"
+                glow
+                pulse
+                rightIcon={<ArrowRight className="w-5 h-5" />}
+                className="min-w-[200px]"
+              >
+                Start Swap
+              </Button>
+            </Link>
           </div>
 
           {/* Scroll Indicator */}
@@ -318,7 +320,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/swap/ethereum/lightning">
+            <Link href="/swap/unichain/btc">
               <Button
                 size="xl"
                 glow
