@@ -365,6 +365,11 @@ export default function SwapPage({
   // Check if base network is EVM
   const isBaseNetworkEVM = baseNetwork && chains[baseNetwork].type === ChainType.EVM;
 
+  // Handle swapping networks
+  const handleSwapNetworks = () => {
+    router.push(`/swap/${destinationNetwork}/${baseNetwork}`);
+  };
+
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -489,10 +494,14 @@ export default function SwapPage({
                   />
                 </div>
 
-                {/* Bridge Icon */}
-                <div className="relative z-10 p-4 bg-space-black border-2 border-cyber-cyan/50 rounded-full">
-                  <ArrowLeftRight className="w-8 h-8 text-cyber-cyan " />
-                </div>
+                {/* Bridge Icon - Clickable to swap networks */}
+                <button
+                  onClick={handleSwapNetworks}
+                  className="relative z-10 p-4 bg-space-black border-2 border-cyber-cyan/50 rounded-full hover:border-cyber-cyan hover:shadow-glow-cyan transition-all duration-300 group"
+                  aria-label="Swap networks"
+                >
+                  <ArrowLeftRight className="w-8 h-8 text-cyber-cyan group-hover:rotate-180 transition-transform duration-300" />
+                </button>
               </div>
 
               {/* Price Quote Display */}
