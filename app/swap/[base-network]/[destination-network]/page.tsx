@@ -107,11 +107,9 @@ export default function SwapPage({
     );
   }
 
-  const isBitcoinInvolved =
+  const isBitcoinDestination =
     destinationNetwork === ChainId.LIGHTNING ||
-    baseNetwork === ChainId.LIGHTNING ||
-    destinationNetwork === ChainId.BTC ||
-    baseNetwork === ChainId.BTC;
+    destinationNetwork === ChainId.BTC;
 
   // Generate random secret and calculate hash
   const generateSecret = () => {
@@ -420,47 +418,6 @@ export default function SwapPage({
                   leftIcon={<Wallet className="w-4 h-4" />}
                   glow
                 />
-
-                {isBitcoinInvolved && (
-                  <div>
-                    <label className="block text-sm font-space font-medium text-cyber-cyan mb-2 uppercase tracking-wider">
-                      Transfer Protocol
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        variant={
-                          swapMethod === "lightning" ? "primary" : "ghost"
-                        }
-                        size="sm"
-                        onClick={() => setSwapMethod("lightning")}
-                        leftIcon={<Zap className="w-4 h-4" />}
-                        className="w-full"
-                      >
-                        Lightning
-                      </Button>
-                      <Button
-                        variant={swapMethod === "native" ? "primary" : "ghost"}
-                        size="sm"
-                        onClick={() => setSwapMethod("native")}
-                        leftIcon={<Bitcoin className="w-4 h-4" />}
-                        className="w-full"
-                      >
-                        Native
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {swapMethod === "native" && isBitcoinInvolved && (
-                  <Input
-                    variant="terminal"
-                    label="Destination Address"
-                    value={recipientAddress}
-                    onChange={(e) => setRecipientAddress(e.target.value)}
-                    placeholder="bc1q..."
-                    leftIcon={<Bitcoin className="w-4 h-4" />}
-                  />
-                )}
               </div>
             </CardContent>
           </Card>
@@ -563,6 +520,49 @@ export default function SwapPage({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Transfer Protocol for Bitcoin destinations */}
+                {isBitcoinDestination && (
+                  <div>
+                    <label className="block text-sm font-space font-medium text-cyber-cyan mb-2 uppercase tracking-wider">
+                      Transfer Protocol
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant={
+                          swapMethod === "lightning" ? "primary" : "ghost"
+                        }
+                        size="sm"
+                        onClick={() => setSwapMethod("lightning")}
+                        leftIcon={<Zap className="w-4 h-4" />}
+                        className="w-full"
+                      >
+                        Lightning
+                      </Button>
+                      <Button
+                        variant={swapMethod === "native" ? "primary" : "ghost"}
+                        size="sm"
+                        onClick={() => setSwapMethod("native")}
+                        leftIcon={<Bitcoin className="w-4 h-4" />}
+                        className="w-full"
+                      >
+                        Native
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Destination Address for native Bitcoin */}
+                {swapMethod === "native" && isBitcoinDestination && (
+                  <Input
+                    variant="terminal"
+                    label="Destination Address"
+                    value={recipientAddress}
+                    onChange={(e) => setRecipientAddress(e.target.value)}
+                    placeholder="bc1q..."
+                    leftIcon={<Bitcoin className="w-4 h-4" />}
+                  />
+                )}
+
                 {/* Expected Output */}
                 <div className="p-4 bg-cosmic-void/50 border border-cyber-cyan/30 rounded-space">
                   <div className="text-sm font-space text-cyber-cyan uppercase tracking-wider mb-2">
