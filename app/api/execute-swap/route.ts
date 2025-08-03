@@ -16,7 +16,7 @@ interface ExecuteSwapRequest {
 }
 
 // Import contract ABIs
-import BitcoinResolverABI from "../../../smart-contracts/out/BitcoinResolver.sol/BitcoinResolver.json";
+import BitcoinResolverABI from "@/utils/BitcoinResolverABI.json";
 
 const BITCOIN_RESOLVER_ADDRESS = process.env.BITCOIN_RESOLVER_ADDRESS || "";
 const RESOLVER_PRIVATE_KEY = process.env.RESOLVER_PRIVATE_KEY || "";
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     // Initialize BitcoinResolver contract
     const bitcoinResolver = new ethers.Contract(
       BITCOIN_RESOLVER_ADDRESS,
-      BitcoinResolverABI.abi,
+      BitcoinResolverABI,
       signer,
     );
 
