@@ -64,3 +64,40 @@ Polaris preserves the trustless, intent-based architecture while leveraging each
 
 ## Developer Setup
 - To test this project locally you'll need a supabase instance connection. It's used to store orders before execution. Apply the migration to you PG, add the envs used by the clients and run `npx supabase link` to be able to run the typegen command on the package.json
+
+## 1inch Submission
+
+This project extensively leverages 1inch technologies to enable trustless cross-chain swaps between Bitcoin/Lightning and EVM chains:
+
+### 1inch Spot Price API Integration
+- **Location**: [`app/api/price/route.ts`](app/api/price/route.ts#L92-L100)
+- **Purpose**: Real-time price discovery for cross-chain swaps
+- **Implementation**: 
+  - API endpoint configuration at lines 5-6
+  - Chain ID mapping for Unichain support at lines 9-11
+  - Price fetching logic at lines 92-100
+  - WBTC proxy pricing for Bitcoin assets at lines 54-66
+
+### 1inch Fusion+ Architecture Implementation
+- **Resolver Pattern**: [`smart-contracts/bitcoin/BitcoinResolver.sol`](smart-contracts/bitcoin/BitcoinResolver.sol)
+  - Implements the resolver/relayer pattern from Fusion+
+  - Acts as trusted on-chain agent for intent execution
+  - Handles atomic swap orchestration
+
+- **Intent-Based Swap Execution**: [`app/api/execute-swap/route.ts`](app/api/execute-swap/route.ts)
+  - Users express swap intents without specifying execution details
+  - Resolver handles gas costs and complex multi-step execution
+  - State machine tracks swap lifecycle similar to Fusion+
+
+- **HTLC Escrow Contract**: [`smart-contracts/bitcoin/EVMHtlcEscrow.sol`](smart-contracts/bitcoin/EVMHtlcEscrow.sol)
+  - Implements atomic swap guarantees using HTLCs
+  - Compatible with 1inch's gasless execution model
+  - 0.3% protocol fee structure for resolver incentives
+
+### Key Integration Points
+1. **Price Discovery**: 1inch API provides accurate cross-chain pricing
+2. **Architecture Pattern**: Fusion+ intent-based design extended to Bitcoin
+3. **Gasless UX**: Users don't pay gas fees, matching 1inch's user experience
+4. **Professional Resolvers**: Market-driven execution similar to 1inch network
+
+For the complete technical implementation details and prize application, see [PROJECT_SUBMISSION.md](PROJECT_SUBMISSION.md#1inch-prize-application)
